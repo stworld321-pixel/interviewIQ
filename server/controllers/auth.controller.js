@@ -1,6 +1,7 @@
 import genToken from "../config/token.js"
 import User from "../models/user.model.js"
 import bcrypt from "bcryptjs"
+import mongoose from "mongoose"
 
 const isProduction = process.env.NODE_ENV === "production"
 const isRender = process.env.RENDER === "true"
@@ -20,6 +21,8 @@ const setAuthCookie = (res, token) => {
     res.cookie("token", token, cookieOptions)
 }
 
+const isDbConnected = () => mongoose.connection.readyState === 1
+
 const publicUser = (user) => ({
     _id: user._id,
     name: user.name,
@@ -36,6 +39,10 @@ const resolveRoleByEmail = (email) => {
 
 export const register = async (req,res) => {
     try {
+        if (!isDbConnected()) {
+            return res.status(503).json({ message: "Database unavailable. Please try again in a moment." })
+        }
+
         let {name, email, password} = req.body
 
         name = name?.trim()
@@ -74,6 +81,10 @@ export const register = async (req,res) => {
 
 export const login = async (req,res) => {
     try {
+        if (!isDbConnected()) {
+            return res.status(503).json({ message: "Database unavailable. Please try again in a moment." })
+        }
+
         let {email, password} = req.body
         email = email?.trim().toLowerCase()
 
@@ -102,6 +113,7 @@ export const login = async (req,res) => {
 
         return res.status(200).json(publicUser(user))
     } catch (error) {
+        console.error("Login error:", error)
         return res.status(500).json({message:`Login error ${error}`})
     }
 }
@@ -109,6 +121,10 @@ export const login = async (req,res) => {
 
 export const googleAuth = async (req,res) => {
     try {
+        if (!isDbConnected()) {
+            return res.status(503).json({ message: "Database unavailable. Please try again in a moment." })
+        }
+
         let {name , email} = req.body
         name = name?.trim()
         email = email?.trim().toLowerCase()
@@ -140,6 +156,7 @@ export const googleAuth = async (req,res) => {
 
 
     } catch (error) {
+        console.error("Google auth error:", error)
         return res.status(500).json({message:`Google auth error ${error}`})
     }
     
