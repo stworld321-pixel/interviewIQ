@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
-import { BsCoin, BsRobot } from "react-icons/bs";
+import { BsCoin } from "react-icons/bs";
 import { HiOutlineLogout } from "react-icons/hi";
 import { FaUserAstronaut } from "react-icons/fa";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { ServerUrl } from "../App";
 import { setUserData } from "../redux/userSlice";
+import logo from "../assets/logo.png";
 
 const navItems = [
   { label: "Home", path: "/" },
@@ -45,10 +46,7 @@ function Navbar() {
         className="w-full max-w-6xl bg-white rounded-[24px] shadow-sm border border-slate-200 px-5 md:px-8 py-4 flex justify-between items-center relative"
       >
         <button onClick={() => navigate("/")} className="flex items-center gap-3">
-          <div className="bg-black text-white p-2 rounded-lg">
-            <BsRobot size={18} />
-          </div>
-          <h1 className="font-semibold hidden md:block text-lg">InterviewIQ.AI</h1>
+          <img src={logo} alt="Brand logo" className="w-50 h-20 object-contain" />
         </button>
 
         <nav className="hidden md:flex items-center gap-1">
@@ -65,6 +63,18 @@ function Navbar() {
               {item.label}
             </NavLink>
           ))}
+          {userData?.role === "admin" && (
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-lg text-sm transition ${
+                  isActive ? "bg-[#0B3C6D] text-white" : "text-[#0B3C6D] hover:bg-blue-50"
+                }`
+              }
+            >
+              Admin
+            </NavLink>
+          )}
         </nav>
 
         <div className="flex items-center gap-3 relative">

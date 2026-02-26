@@ -17,12 +17,12 @@ import {
   BsMortarboard,
   BsPerson,
   BsRocket,
-  BsRobot,
 } from "react-icons/bs";
 import { auth, provider } from "../utils/firebase";
 import { ServerUrl } from "../App";
 import { setUserData } from "../redux/userSlice";
 import signupImage from "../assets/Signup.png";
+import logo from "../assets/logo.png";
 
 function Auth({ defaultMode = "login" }) {
   const isRegister = defaultMode === "register";
@@ -102,19 +102,16 @@ function Auth({ defaultMode = "login" }) {
     return (
       <div className="font-display bg-[#f6f6f8] text-slate-900 antialiased h-screen overflow-hidden">
         <div className="flex h-full w-full">
-          <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#135bec]/10">
-            <div className="absolute inset-0 z-0 opacity-40 bg-gradient-to-br from-[#135bec] via-[#135bec]/50 to-transparent"></div>
+          <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#0B3C6D]/10">
+            <div className="absolute inset-0 z-0 opacity-40 bg-gradient-to-br from-[#0B3C6D] via-[#0B3C6D]/50 to-transparent"></div>
             <div className="absolute inset-0 z-10 flex flex-col justify-center px-20">
               <div className="mb-8">
                 <div className="flex items-center gap-2 mb-6">
-                  <div className="p-2 bg-[#135bec] rounded-lg text-white">
-                    <BsRocket size={20} />
-                  </div>
-                  <span className="text-2xl font-black tracking-tight text-slate-900">InterviewIQ.AI</span>
+                  <img src={logo} alt="Brand logo" className="w-50 h-50 object-contain" />
                 </div>
                 <h1 className="text-6xl font-black leading-tight mb-6 text-slate-900">
                   The future of <br />
-                  <span className="text-[#135bec]">interview prep</span> <br />
+                  <span className="text-[#0B3C6D]">interview prep</span> <br />
                   is here.
                 </h1>
                 <p className="text-xl text-slate-600 max-w-md leading-relaxed">
@@ -142,15 +139,15 @@ function Auth({ defaultMode = "login" }) {
               </div>
             </div>
 
-            <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#135bec]/20 rounded-full blur-3xl"></div>
-            <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#135bec]/30 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#0B3C6D]/20 rounded-full blur-3xl"></div>
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#0B3C6D]/30 rounded-full blur-3xl"></div>
           </div>
 
           <div className="w-full lg:w-1/2 h-full flex flex-col bg-white overflow-y-auto">
             <header className="p-8 flex justify-end lg:absolute lg:top-0 lg:right-0">
               <p className="text-sm text-slate-500">
                 Already have an account?
-                <Link className="text-[#135bec] font-bold hover:underline ml-1" to="/login">
+                <Link className="text-[#0B3C6D] font-bold hover:underline ml-1" to="/login">
                   Log In
                 </Link>
               </p>
@@ -176,7 +173,7 @@ function Auth({ defaultMode = "login" }) {
                       <input
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3.5 rounded-xl border-slate-200 bg-slate-50 focus:ring-[#135bec] focus:border-[#135bec] transition-all"
+                        className="w-full pl-12 pr-4 py-3.5 rounded-xl border-slate-200 bg-slate-50 focus:ring-[#0B3C6D] focus:border-[#0B3C6D] transition-all"
                         placeholder="John Doe"
                         type="text"
                       />
@@ -190,7 +187,7 @@ function Auth({ defaultMode = "login" }) {
                       <input
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3.5 rounded-xl border-slate-200 bg-slate-50 focus:ring-[#135bec] focus:border-[#135bec] transition-all"
+                        className="w-full pl-12 pr-4 py-3.5 rounded-xl border-slate-200 bg-slate-50 focus:ring-[#0B3C6D] focus:border-[#0B3C6D] transition-all"
                         placeholder="john@company.com"
                         type="email"
                       />
@@ -204,7 +201,7 @@ function Auth({ defaultMode = "login" }) {
                       <input
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3.5 rounded-xl border-slate-200 bg-slate-50 focus:ring-[#135bec] focus:border-[#135bec] transition-all"
+                        className="w-full pl-12 pr-4 py-3.5 rounded-xl border-slate-200 bg-slate-50 focus:ring-[#0B3C6D] focus:border-[#0B3C6D] transition-all"
                         placeholder="••••••••"
                         type="password"
                       />
@@ -219,7 +216,7 @@ function Auth({ defaultMode = "login" }) {
                         onClick={() => setUserRole("seeker")}
                         className={`flex flex-col items-center justify-center p-3 text-xs font-bold rounded-lg border transition-all ${
                           userRole === "seeker"
-                            ? "border-[#135bec] bg-[#135bec]/5 text-[#135bec]"
+                            ? "border-[#0B3C6D] bg-[#0B3C6D]/5 text-[#0B3C6D]"
                             : "border-slate-200 text-slate-500"
                         }`}
                       >
@@ -231,7 +228,7 @@ function Auth({ defaultMode = "login" }) {
                         onClick={() => setUserRole("student")}
                         className={`flex flex-col items-center justify-center p-3 text-xs font-bold rounded-lg border transition-all ${
                           userRole === "student"
-                            ? "border-[#135bec] bg-[#135bec]/5 text-[#135bec]"
+                            ? "border-[#0B3C6D] bg-[#0B3C6D]/5 text-[#0B3C6D]"
                             : "border-slate-200 text-slate-500"
                         }`}
                       >
@@ -243,7 +240,7 @@ function Auth({ defaultMode = "login" }) {
                         onClick={() => setUserRole("employer")}
                         className={`flex flex-col items-center justify-center p-3 text-xs font-bold rounded-lg border transition-all ${
                           userRole === "employer"
-                            ? "border-[#135bec] bg-[#135bec]/5 text-[#135bec]"
+                            ? "border-[#0B3C6D] bg-[#0B3C6D]/5 text-[#0B3C6D]"
                             : "border-slate-200 text-slate-500"
                         }`}
                       >
@@ -256,7 +253,7 @@ function Auth({ defaultMode = "login" }) {
                   {error && <p className="text-sm text-red-500">{error}</p>}
 
                   <button
-                    className="w-full py-4 bg-gradient-to-r from-[#135bec] to-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-[#135bec]/25 hover:shadow-[#135bec]/40 active:scale-[0.98] transition-all mt-4 disabled:opacity-60"
+                    className="w-full py-4 bg-gradient-to-r from-[#0B3C6D] to-[#1E88E5] text-white font-bold rounded-xl shadow-lg shadow-[#0B3C6D]/25 hover:shadow-[#0B3C6D]/40 active:scale-[0.98] transition-all mt-4 disabled:opacity-60"
                     type="submit"
                     disabled={loading}
                   >
@@ -307,16 +304,14 @@ function Auth({ defaultMode = "login" }) {
     <div className="min-h-screen bg-[#f6f6f8] text-slate-900">
       <div className="flex min-h-screen">
         <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center p-12 overflow-hidden bg-slate-900">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,#1d4ed8_0%,transparent_42%),radial-gradient(circle_at_top_right,#135bec_0%,transparent_40%),radial-gradient(circle_at_bottom_right,#1e3a8a_0%,transparent_45%)]" />
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#135bec]/20 rounded-full blur-[100px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#135bec]/15 rounded-full blur-[120px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,#1d4ed8_0%,transparent_42%),radial-gradient(circle_at_top_right,#0B3C6D_0%,transparent_40%),radial-gradient(circle_at_bottom_right,#1e3a8a_0%,transparent_45%)]" />
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#0B3C6D]/20 rounded-full blur-[100px]" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#0B3C6D]/15 rounded-full blur-[120px]" />
 
           <div className="relative z-10 w-full max-w-lg">
             <div className="rounded-xl p-8 shadow-2xl border border-white/20 bg-white/10 backdrop-blur-xl">
               <div className="flex items-center gap-3 mb-6">
-                <div className="bg-[#135bec] p-2 rounded-lg text-white">
-                  <BsRobot />
-                </div>
+                <img src={logo} alt="Brand logo" className="w-12 h-12 object-contain" />
                 <h3 className="text-white font-bold text-xl">AI Feedback Insight</h3>
               </div>
 
@@ -325,7 +320,7 @@ function Auth({ defaultMode = "login" }) {
                   <p className="text-slate-300 text-sm mb-2 uppercase tracking-wider font-semibold">Communication Clarity</p>
                   <div className="flex items-center gap-4">
                     <div className="flex-1 bg-white/10 h-2 rounded-full overflow-hidden">
-                      <div className="bg-[#135bec] h-full w-[92%]"></div>
+                      <div className="bg-[#0B3C6D] h-full w-[92%]"></div>
                     </div>
                     <span className="text-white font-bold text-lg">92%</span>
                   </div>
@@ -335,9 +330,9 @@ function Auth({ defaultMode = "login" }) {
                   <p className="text-slate-200 text-lg italic leading-relaxed">
                     "Your communication clarity is in the top 5% of candidates."
                   </p>
-                  <div className="flex items-center gap-2 text-[#7ea4ff]">
+                  <div className="flex items-center gap-2 text-[#1E88E5]">
                     <BsCheckCircleFill className="text-sm" />
-                    <span className="text-sm font-medium">Verified by InterviewIQ Engine</span>
+                    <span className="text-sm font-medium">Verified by Hireloop Engine</span>
                   </div>
                 </div>
               </div>
@@ -354,10 +349,7 @@ function Auth({ defaultMode = "login" }) {
           <div className="w-full max-w-md">
             <div className="mb-10 text-center lg:text-left">
               <div className="flex items-center justify-center lg:justify-start gap-2 mb-8">
-                <div className="bg-[#135bec] p-1.5 rounded-lg text-white">
-                  <BsRobot size={18} />
-                </div>
-                <span className="text-2xl font-bold tracking-tight">InterviewIQ.AI</span>
+                <img src={logo} alt="Brand logo" className="w-14 h-14 object-contain" />
               </div>
               <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
               <p className="text-slate-500">Please enter your details to sign in.</p>
@@ -369,7 +361,7 @@ function Auth({ defaultMode = "login" }) {
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3.5 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#135bec] focus:border-transparent transition-all shadow-sm"
+                  className="w-full px-4 py-3.5 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#0B3C6D] focus:border-transparent transition-all shadow-sm"
                   placeholder="name@company.com"
                   type="email"
                 />
@@ -378,7 +370,7 @@ function Auth({ defaultMode = "login" }) {
               <div>
                 <div className="flex justify-between mb-2">
                   <label className="block text-sm font-semibold text-slate-700">Password</label>
-                  <button type="button" className="text-sm font-semibold text-[#135bec] hover:text-[#0f4bc4] transition-colors">
+                  <button type="button" className="text-sm font-semibold text-[#0B3C6D] hover:text-[#1E88E5] transition-colors">
                     Forgot password?
                   </button>
                 </div>
@@ -387,7 +379,7 @@ function Auth({ defaultMode = "login" }) {
                   <input
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#135bec] focus:border-transparent transition-all shadow-sm pr-12"
+                    className="w-full px-4 py-3.5 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-[#0B3C6D] focus:border-transparent transition-all shadow-sm pr-12"
                     placeholder="••••••••"
                     type={showPassword ? "text" : "password"}
                   />
@@ -403,7 +395,7 @@ function Auth({ defaultMode = "login" }) {
 
               <div className="flex items-center">
                 <input
-                  className="h-4 w-4 rounded border-slate-300 text-[#135bec] focus:ring-[#135bec] bg-white"
+                  className="h-4 w-4 rounded border-slate-300 text-[#0B3C6D] focus:ring-[#0B3C6D] bg-white"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                   type="checkbox"
@@ -417,7 +409,7 @@ function Auth({ defaultMode = "login" }) {
               {error && <p className="text-sm text-red-500">{error}</p>}
 
               <button
-                className="w-full py-4 px-6 bg-gradient-to-r from-[#135bec] to-blue-600 hover:from-blue-600 hover:to-[#135bec] text-white font-bold rounded-lg shadow-lg shadow-[#135bec]/20 transition-all transform hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-60"
+                className="w-full py-4 px-6 bg-gradient-to-r from-[#0B3C6D] to-[#1E88E5] hover:from-[#1E88E5] hover:to-[#0B3C6D] text-white font-bold rounded-lg shadow-lg shadow-[#0B3C6D]/20 transition-all transform hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-60"
                 type="submit"
                 disabled={loading}
               >
@@ -440,7 +432,7 @@ function Auth({ defaultMode = "login" }) {
                 disabled={loading}
                 className="flex items-center justify-center gap-2 py-3 px-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors font-medium text-slate-700 disabled:opacity-60"
               >
-                <BsGoogle className="text-[#135bec]" /> Google
+                <BsGoogle className="text-[#0B3C6D]" /> Google
               </button>
               <button
                 type="button"
@@ -452,7 +444,7 @@ function Auth({ defaultMode = "login" }) {
 
             <p className="mt-10 text-center text-slate-600">
               Don't have an account?{" "}
-              <Link to="/register" className="font-bold text-[#135bec] hover:underline transition-all">
+              <Link to="/register" className="font-bold text-[#0B3C6D] hover:underline transition-all">
                 Sign up for free
               </Link>
             </p>
@@ -470,3 +462,4 @@ function Auth({ defaultMode = "login" }) {
 }
 
 export default Auth;
+

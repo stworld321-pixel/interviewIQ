@@ -1,6 +1,6 @@
 import React from "react";
-import { BsRobot } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 function Footer() {
   return (
@@ -9,10 +9,7 @@ function Footer() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
             <div className="flex items-center gap-3">
-              <div className="bg-black text-white p-2 rounded-lg">
-                <BsRobot size={16} />
-              </div>
-              <h2 className="font-semibold">InterviewIQ.AI</h2>
+              <img src={logo} alt="Brand logo" className="w-40 h-10 object-contain" />
             </div>
             <p className="text-sm text-slate-600 mt-3 max-w-xl">
               AI-powered interview preparation platform built to improve confidence, communication, and technical performance.

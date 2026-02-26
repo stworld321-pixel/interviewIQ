@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -12,10 +12,10 @@ import {
   BsGrid,
   BsMic,
   BsPersonBadge,
-  BsRobot,
   BsShare,
   BsTerminal,
 } from "react-icons/bs";
+import logo from "../assets/logo.png";
 
 function Home() {
   const { userData } = useSelector((state) => state.user);
@@ -30,27 +30,24 @@ function Home() {
   };
 
   return (
-    <div className="bg-[#f6f6f8] text-slate-900">
+    <div className="bg-gradient-to-b from-white via-[#f6f9ff] to-[#eef5ff] text-slate-900">
       <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button onClick={() => navigate("/")} className="flex items-center gap-2">
-            <div className="size-10 bg-[#135bec] rounded-lg flex items-center justify-center text-white">
-              <BsRobot size={22} />
-            </div>
-            <h2 className="text-xl font-bold tracking-tight">InterviewIQ.AI</h2>
+            <img src={logo} alt="Brand logo" className="w-50 h-50 object-contain" />
           </button>
 
           <nav className="hidden md:flex items-center gap-8">
-            <a className="text-sm font-medium hover:text-[#135bec] transition-colors" href="#how-it-works">
+            <a className="text-sm font-medium hover:text-[#1E88E5] transition-colors" href="#how-it-works">
               How It Works
             </a>
-            <a className="text-sm font-medium hover:text-[#135bec] transition-colors" href="#features">
+            <a className="text-sm font-medium hover:text-[#1E88E5] transition-colors" href="#features">
               Features
             </a>
-            <a className="text-sm font-medium hover:text-[#135bec] transition-colors" href="#pricing">
+            <a className="text-sm font-medium hover:text-[#1E88E5] transition-colors" href="#pricing">
               Pricing
             </a>
-            <a className="text-sm font-medium hover:text-[#135bec] transition-colors" href="#about">
+            <a className="text-sm font-medium hover:text-[#1E88E5] transition-colors" href="#about">
               About
             </a>
           </nav>
@@ -58,13 +55,13 @@ function Home() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate("/login")}
-              className="hidden sm:block text-sm font-bold hover:text-[#135bec] transition-colors px-4 py-2"
+              className="hidden sm:block text-sm font-bold hover:text-[#1E88E5] transition-colors px-4 py-2"
             >
               Log In
             </button>
             <button
               onClick={() => gateAndGo("/interview")}
-              className="bg-[#135bec] hover:bg-[#0f4bc4] text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-[#135bec]/20"
+              className="bg-[#0B3C6D] hover:bg-[#1E88E5] text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-[#1E88E5]/25"
             >
               Start Interview
             </button>
@@ -81,16 +78,16 @@ function Home() {
               transition={{ duration: 0.45 }}
               className="flex flex-col gap-8"
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#135bec]/10 text-[#135bec] text-xs font-bold uppercase tracking-wider w-fit">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1E88E5]/10 text-[#0B3C6D] text-xs font-bold uppercase tracking-wider w-fit">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#135bec] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#135bec]"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1E88E5] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1E88E5]"></span>
                 </span>
                 New: Resume-Based Analysis
               </div>
 
               <h1 className="text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight">
-                AI-Powered <span className="text-[#135bec]">Smart Interview</span> Platform
+                AI-Powered <span className="text-[#1E88E5]">Smart Interview</span> Platform
               </h1>
 
               <p className="text-lg text-slate-600 leading-relaxed max-w-xl">
@@ -100,7 +97,7 @@ function Home() {
               <div className="flex flex-wrap gap-4">
                 <button
                   onClick={() => gateAndGo("/interview")}
-                  className="bg-[#135bec] hover:bg-[#0f4bc4] text-white font-bold px-8 py-4 rounded-xl transition-all shadow-xl shadow-[#135bec]/30 flex items-center gap-2"
+                  className="bg-[#0B3C6D] hover:bg-[#1E88E5] text-white font-bold px-8 py-4 rounded-xl transition-all shadow-xl shadow-[#1E88E5]/30 flex items-center gap-2"
                 >
                   Start Interview <BsArrowRight />
                 </button>
@@ -114,13 +111,13 @@ function Home() {
             </motion.div>
 
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-tr from-[#135bec]/20 to-transparent rounded-3xl blur-2xl"></div>
+              <div className="absolute -inset-4 bg-gradient-to-tr from-[#0B3C6D]/25 via-[#1E88E5]/20 to-transparent rounded-3xl blur-2xl"></div>
               <div className="relative rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl overflow-hidden aspect-video flex items-center justify-center">
                 <div className="flex items-center justify-center gap-1 h-32 w-full">
                   {[8, 16, 24, 32, 28, 20, 12, 6].map((h, i) => (
                     <div
                       key={i}
-                      className={`w-2 rounded-full ${i === 3 ? "bg-[#135bec]" : "bg-[#135bec]/50"}`}
+                      className={`w-2 rounded-full ${i === 3 ? "bg-[#1E88E5]" : "bg-[#0B3C6D]/50"}`}
                       style={{ height: `${h * 4}px` }}
                     ></div>
                   ))}
@@ -158,7 +155,7 @@ function Home() {
                   key={item.title}
                   className="p-8 rounded-2xl bg-[#f6f6f8] border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <div className="size-12 bg-[#135bec]/10 text-[#135bec] rounded-xl flex items-center justify-center mb-6">
+                  <div className="size-12 bg-[#1E88E5]/10 text-[#0B3C6D] rounded-xl flex items-center justify-center mb-6">
                     {item.icon}
                   </div>
                   <h3 className="text-xl font-bold mb-3">{item.title}</h3>
@@ -186,9 +183,9 @@ function Home() {
               ].map((feature) => (
                 <div
                   key={feature.title}
-                  className="group p-8 rounded-2xl border border-slate-200 hover:border-[#135bec] transition-colors bg-white"
+                  className="group p-8 rounded-2xl border border-slate-200 hover:border-[#1E88E5] transition-colors bg-white"
                 >
-                  <div className="text-[#135bec] text-3xl mb-4">{feature.icon}</div>
+                  <div className="text-[#1E88E5] text-3xl mb-4">{feature.icon}</div>
                   <h4 className="text-lg font-bold mb-2">{feature.title}</h4>
                   <p className="text-sm text-slate-600">{feature.desc}</p>
                 </div>
@@ -199,13 +196,13 @@ function Home() {
 
         <section className="py-24 bg-slate-900 text-white overflow-hidden relative">
           <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <div className="absolute top-0 left-0 w-96 h-96 bg-[#135bec] blur-[120px]"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#135bec] blur-[120px]"></div>
+            <div className="absolute top-0 left-0 w-96 h-96 bg-[#0B3C6D] blur-[120px]"></div>
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#1E88E5] blur-[120px]"></div>
           </div>
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <div className="grid lg:grid-cols-2 gap-px bg-slate-800 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
               <div className="p-12 lg:p-16 bg-slate-900 flex flex-col items-start gap-6">
-                <div className="size-16 bg-[#135bec]/20 text-[#5a8dff] rounded-2xl flex items-center justify-center mb-4">
+                <div className="size-16 bg-[#0B3C6D]/20 text-[#1E88E5] rounded-2xl flex items-center justify-center mb-4">
                   <BsPersonBadge size={30} />
                 </div>
                 <h3 className="text-3xl font-bold tracking-tight">HR Interview Mode</h3>
@@ -215,13 +212,13 @@ function Home() {
                 <ul className="space-y-3">
                   {["Behavioral focus", "Conflict resolution", "Leadership potential"].map((item) => (
                     <li key={item} className="flex items-center gap-2 text-sm text-slate-300">
-                      <BsCheckCircle className="text-[#5a8dff] text-sm" /> {item}
+                      <BsCheckCircle className="text-[#1E88E5] text-sm" /> {item}
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="p-12 lg:p-16 bg-slate-900 flex flex-col items-start gap-6">
-                <div className="size-16 bg-[#135bec]/20 text-[#5a8dff] rounded-2xl flex items-center justify-center mb-4">
+                <div className="size-16 bg-[#0B3C6D]/20 text-[#1E88E5] rounded-2xl flex items-center justify-center mb-4">
                   <BsTerminal size={30} />
                 </div>
                 <h3 className="text-3xl font-bold tracking-tight">Technical Interview Mode</h3>
@@ -231,7 +228,7 @@ function Home() {
                 <ul className="space-y-3">
                   {["Depth of knowledge", "System design analysis", "Coding logic verification"].map((item) => (
                     <li key={item} className="flex items-center gap-2 text-sm text-slate-300">
-                      <BsCheckCircle className="text-[#5a8dff] text-sm" /> {item}
+                      <BsCheckCircle className="text-[#1E88E5] text-sm" /> {item}
                     </li>
                   ))}
                 </ul>
@@ -244,12 +241,12 @@ function Home() {
           <div className="max-w-7xl mx-auto px-6 text-center flex flex-col items-center gap-8">
             <h2 className="text-4xl md:text-6xl font-black tracking-tight max-w-2xl">Prepare Smarter. Perform Better.</h2>
             <p className="text-slate-600 text-xl max-w-2xl">
-              Join professionals using InterviewIQ.AI to improve consistency and confidence in real interviews.
+              Join professionals using Hireloop to improve consistency and confidence in real interviews.
             </p>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => gateAndGo("/interview")}
-                className="bg-[#135bec] hover:bg-[#0f4bc4] text-white font-bold px-10 py-5 rounded-2xl transition-all shadow-xl shadow-[#135bec]/30 text-lg"
+                className="bg-[#0B3C6D] hover:bg-[#1E88E5] text-white font-bold px-10 py-5 rounded-2xl transition-all shadow-xl shadow-[#1E88E5]/30 text-lg"
               >
                 Launch Your Free Interview
               </button>
@@ -269,10 +266,7 @@ function Home() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
             <div className="lg:col-span-2">
               <div className="flex items-center gap-2 mb-6">
-                <div className="size-8 bg-[#135bec] rounded-md flex items-center justify-center text-white">
-                  <BsRobot size={16} />
-                </div>
-                <h2 className="text-lg font-bold tracking-tight">InterviewIQ.AI</h2>
+                <img src={logo} alt="Brand logo" className="w-40 h-14 object-contain" />
               </div>
               <p className="text-sm text-slate-500 max-w-xs leading-relaxed">
                 AI interview simulation platform built to bridge the gap between preparation and professional success.
@@ -281,25 +275,25 @@ function Home() {
             <div>
               <h5 className="font-bold text-sm mb-6 uppercase tracking-widest text-slate-400">Platform</h5>
               <ul className="space-y-4">
-                <li><a className="text-sm hover:text-[#135bec] transition-colors" href="#how-it-works">How It Works</a></li>
-                <li><a className="text-sm hover:text-[#135bec] transition-colors" href="#features">Interview Modes</a></li>
-                <li><a className="text-sm hover:text-[#135bec] transition-colors" href="#pricing">Pricing Plans</a></li>
+                <li><a className="text-sm hover:text-[#1E88E5] transition-colors" href="#how-it-works">How It Works</a></li>
+                <li><a className="text-sm hover:text-[#1E88E5] transition-colors" href="#features">Interview Modes</a></li>
+                <li><a className="text-sm hover:text-[#1E88E5] transition-colors" href="#pricing">Pricing Plans</a></li>
               </ul>
             </div>
             <div>
               <h5 className="font-bold text-sm mb-6 uppercase tracking-widest text-slate-400">Company</h5>
               <ul className="space-y-4">
-                <li><button onClick={() => navigate("/about")} className="text-sm hover:text-[#135bec] transition-colors">About Us</button></li>
-                <li><button onClick={() => navigate("/contact")} className="text-sm hover:text-[#135bec] transition-colors">Contact</button></li>
-                <li><button onClick={() => navigate("/pricing")} className="text-sm hover:text-[#135bec] transition-colors">Plans</button></li>
+                <li><button onClick={() => navigate("/about")} className="text-sm hover:text-[#1E88E5] transition-colors">About Us</button></li>
+                <li><button onClick={() => navigate("/contact")} className="text-sm hover:text-[#1E88E5] transition-colors">Contact</button></li>
+                <li><button onClick={() => navigate("/pricing")} className="text-sm hover:text-[#1E88E5] transition-colors">Plans</button></li>
               </ul>
             </div>
           </div>
           <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-xs text-slate-500">© 2026 InterviewIQ.AI. All rights reserved.</p>
+            <p className="text-xs text-slate-500">© 2026 Hireloop. All rights reserved.</p>
             <div className="flex gap-6">
-              <button className="text-slate-400 hover:text-[#135bec] transition-colors"><BsGrid size={18} /></button>
-              <button className="text-slate-400 hover:text-[#135bec] transition-colors"><BsShare size={18} /></button>
+              <button className="text-slate-400 hover:text-[#1E88E5] transition-colors"><BsGrid size={18} /></button>
+              <button className="text-slate-400 hover:text-[#1E88E5] transition-colors"><BsShare size={18} /></button>
             </div>
           </div>
         </div>
@@ -310,3 +304,5 @@ function Home() {
 }
 
 export default Home;
+
+

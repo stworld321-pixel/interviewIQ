@@ -12,6 +12,7 @@ import Pricing from './pages/Pricing'
 import InterviewReport from './pages/InterviewReport'
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
+import AdminDashboard from './pages/AdminDashboard'
 
 export const ServerUrl  = import.meta.env.VITE_API_URL || "http://localhost:8000"
 
@@ -25,6 +26,25 @@ function ProtectedRoute({ children }) {
 
   if (!userData) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />
+  }
+
+  return children
+}
+
+function AdminRoute({ children }) {
+  const { userData, authChecked } = useSelector((state) => state.user)
+  const location = useLocation()
+
+  if (!authChecked) {
+    return null
+  }
+
+  if (!userData) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />
+  }
+
+  if (userData.role !== "admin") {
+    return <Navigate to="/" replace />
   }
 
   return children
@@ -60,6 +80,7 @@ function App() {
       <Route path='/contact' element={<ContactUs/>}/>
       <Route path='/pricing' element={<Pricing/>}/>
       <Route path='/report/:id' element={<InterviewReport/>}/>
+      <Route path='/admin' element={<AdminRoute><AdminDashboard/></AdminRoute>}/>
 
 
 

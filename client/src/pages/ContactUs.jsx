@@ -42,21 +42,21 @@ function ContactUs() {
 
             <div className="mt-8 space-y-4">
               <div className="flex items-start gap-3">
-                <BsEnvelope className="mt-1 text-[#4f83ff]" />
+                <BsEnvelope className="mt-1 text-[#1E88E5]" />
                 <div>
                   <p className="text-sm text-slate-400">Email</p>
-                  <p>support@interviewiq.ai</p>
+                  <p>support@hireloop.ai</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <BsTelephone className="mt-1 text-[#4f83ff]" />
+                <BsTelephone className="mt-1 text-[#1E88E5]" />
                 <div>
                   <p className="text-sm text-slate-400">Phone</p>
                   <p>+91 98765 43210</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <BsGeoAlt className="mt-1 text-[#4f83ff]" />
+                <BsGeoAlt className="mt-1 text-[#1E88E5]" />
                 <div>
                   <p className="text-sm text-slate-400">Location</p>
                   <p>Chennai, India</p>
@@ -104,14 +104,14 @@ function ContactUs() {
 
               <button
                 type="submit"
-                className="px-6 py-3 rounded-full bg-[#135bec] text-white hover:bg-[#0f4bc4] transition"
+                className="px-6 py-3 rounded-full bg-[#0B3C6D] text-white hover:bg-[#1E88E5] transition"
               >
                 Send Message
               </button>
             </form>
 
             {submitted && (
-              <p className="mt-4 text-sm text-[#135bec]">
+              <p className="mt-4 text-sm text-[#0B3C6D]">
                 Thanks. Your message has been recorded. We will get back to you soon.
               </p>
             )}
@@ -125,3 +125,4 @@ function ContactUs() {
 }
 
 export default ContactUs;
+

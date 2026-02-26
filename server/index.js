@@ -8,6 +8,7 @@ import authRouter from "./routes/auth.route.js"
 import userRouter from "./routes/user.route.js"
 import interviewRouter from "./routes/interview.route.js"
 import paymentRouter from "./routes/payment.route.js"
+import adminRouter from "./routes/admin.route.js"
 
 const localOrigins = ["http://localhost:5173", "http://localhost:5174"];
 const deployedOrigins = (process.env.CLIENT_URL || "")
@@ -26,10 +27,19 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Hireloop backend is running" });
+});
+
+app.get("/api", (req, res) => {
+  res.status(200).json({ message: "Hireloop API is running" });
+});
+
 app.use("/api/auth" , authRouter)
 app.use("/api/user", userRouter)
 app.use("/api/interview" , interviewRouter)
 app.use("/api/payment" , paymentRouter)
+app.use("/api/admin" , adminRouter)
 
 const PORT = process.env.PORT || 6000
 app.listen(PORT , ()=>{

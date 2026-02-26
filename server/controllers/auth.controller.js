@@ -18,9 +18,15 @@ const publicUser = (user) => ({
     _id: user._id,
     name: user.name,
     email: user.email,
+    role: user.role || "user",
     credits: user.credits,
     authType: user.authType
 })
+
+const resolveRoleByEmail = (email) => {
+    const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase()
+    return adminEmail && email === adminEmail ? "admin" : "user"
+}
 
 export const register = async (req,res) => {
     try {
@@ -47,7 +53,8 @@ export const register = async (req,res) => {
             name,
             email,
             password: hashedPassword,
-            authType: "local"
+            authType: "local",
+            role: resolveRoleByEmail(email)
         })
 
         const token = await genToken(user._id)
@@ -78,6 +85,12 @@ export const login = async (req,res) => {
             return res.status(400).json({message:"Invalid email or password"})
         }
 
+        const expectedRole = resolveRoleByEmail(email)
+        if (user.role !== expectedRole) {
+            user.role = expectedRole
+            await user.save()
+        }
+
         const token = await genToken(user._id)
         setAuthCookie(res, token)
 
@@ -103,8 +116,15 @@ export const googleAuth = async (req,res) => {
             user = await User.create({
                 name , 
                 email,
-                authType:"google"
+                authType:"google",
+                role: resolveRoleByEmail(email)
             })
+        } else {
+            const expectedRole = resolveRoleByEmail(email)
+            if (user.role !== expectedRole) {
+                user.role = expectedRole
+                await user.save()
+            }
         }
         const token = await genToken(user._id)
         setAuthCookie(res, token)
