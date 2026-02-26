@@ -13,7 +13,7 @@ import InterviewReport from './pages/InterviewReport'
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 
-export const ServerUrl  = import.meta.env.VITE_API_URL || "https://interviewiq-fc93.onrender.com"
+export const ServerUrl  = import.meta.env.VITE_API_URL || "https://interviewiq-1-server.onrender.com"
 
 function ProtectedRoute({ children }) {
   const { userData, authChecked } = useSelector((state) => state.user)
