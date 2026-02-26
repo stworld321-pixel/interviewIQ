@@ -9,9 +9,17 @@ import userRouter from "./routes/user.route.js"
 import interviewRouter from "./routes/interview.route.js"
 import paymentRouter from "./routes/payment.route.js"
 
+const localOrigins = ["http://localhost:5173", "http://localhost:5174"];
+const deployedOrigins = (process.env.CLIENT_URL || "")
+  .split(",")
+  .map((url) => url.trim())
+  .filter(Boolean);
+
+const allowedOrigins = [...new Set([...localOrigins, ...deployedOrigins])];
+
 const app = express()
 app.use(cors({
-    origin:["http://localhost:5173","http://localhost:5174"],
+    origin: allowedOrigins,
     credentials:true
 }))
 

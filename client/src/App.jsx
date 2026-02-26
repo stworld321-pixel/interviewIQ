@@ -13,7 +13,7 @@ import InterviewReport from './pages/InterviewReport'
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 
-export const ServerUrl  = "http://localhost:8000"
+export const ServerUrl  = import.meta.env.VITE_API_URL || "http://localhost:8000"
 
 function ProtectedRoute({ children }) {
   const { userData, authChecked } = useSelector((state) => state.user)
