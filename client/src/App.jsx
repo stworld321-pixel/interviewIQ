@@ -14,7 +14,7 @@ import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 import AdminDashboard from './pages/AdminDashboard'
 
-export const ServerUrl  = import.meta.env.VITE_API_URL || "http://localhost:8000"
+export const ServerUrl  = import.meta.env.VITE_API_URL || "https://interviewiq-1-server.onrender.com"
 
 function ProtectedRoute({ children }) {
   const { userData, authChecked } = useSelector((state) => state.user)
