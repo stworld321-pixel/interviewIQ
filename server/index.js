@@ -17,10 +17,19 @@ const deployedOrigins = (process.env.CLIENT_URL || "")
   .filter(Boolean);
 
 const allowedOrigins = [...new Set([...localOrigins, ...deployedOrigins])];
+const renderDomainRegex = /^https:\/\/[a-z0-9-]+\.onrender\.com$/i;
 
 const app = express()
+app.set("trust proxy", 1)
 app.use(cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+        // Allow non-browser tools (no Origin header)
+        if (!origin) return callback(null, true)
+        if (allowedOrigins.includes(origin) || renderDomainRegex.test(origin)) {
+            return callback(null, true)
+        }
+        return callback(new Error(`CORS blocked for origin: ${origin}`))
+    },
     credentials:true
 }))
 

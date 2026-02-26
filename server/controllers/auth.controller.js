@@ -3,10 +3,16 @@ import User from "../models/user.model.js"
 import bcrypt from "bcryptjs"
 
 const isProduction = process.env.NODE_ENV === "production"
+const isRender = process.env.RENDER === "true"
+const hasRemoteClient = (process.env.CLIENT_URL || "")
+    .split(",")
+    .map((url) => url.trim())
+    .some((url) => url.startsWith("https://") && !url.includes("localhost"))
+const useCrossSiteCookies = isProduction || isRender || hasRemoteClient
 const cookieOptions = {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: useCrossSiteCookies,
+    sameSite: useCrossSiteCookies ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000
 }
 
