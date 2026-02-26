@@ -14,7 +14,9 @@ import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 import AdminDashboard from './pages/AdminDashboard'
 
-export const ServerUrl  = import.meta.env.VITE_API_URL || "https://interviewiq-1-server.onrender.com"
+export const ServerUrl =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? "http://localhost:8000" : "https://interviewiq-1-server.onrender.com")
 
 function ProtectedRoute({ children }) {
   const { userData, authChecked } = useSelector((state) => state.user)
@@ -54,6 +56,13 @@ function App() {
 
   const dispatch = useDispatch()
   useEffect(()=>{
+    const storedToken = localStorage.getItem("token")
+    if (storedToken) {
+      axios.defaults.headers.common.Authorization = `Bearer ${storedToken}`
+    } else {
+      delete axios.defaults.headers.common.Authorization
+    }
+
     const getUser = async () => {
       try {
         const result = await axios.get(ServerUrl + "/api/user/current-user", {withCredentials:true})

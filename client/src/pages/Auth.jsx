@@ -66,6 +66,10 @@ function Auth({ defaultMode = "login" }) {
         : { email: safeEmail, password, rememberMe };
 
       const result = await axios.post(ServerUrl + endpoint, payload, { withCredentials: true });
+      if (result.data?.token) {
+        localStorage.setItem("token", result.data.token);
+        axios.defaults.headers.common.Authorization = `Bearer ${result.data.token}`;
+      }
       dispatch(setUserData(result.data));
       navigate(redirectTo, { replace: true });
     } catch (apiError) {
@@ -87,6 +91,10 @@ function Auth({ defaultMode = "login" }) {
         { name: user.displayName, email: user.email },
         { withCredentials: true }
       );
+      if (result.data?.token) {
+        localStorage.setItem("token", result.data.token);
+        axios.defaults.headers.common.Authorization = `Bearer ${result.data.token}`;
+      }
       dispatch(setUserData(result.data));
       navigate(redirectTo, { replace: true });
     } catch (err) {
@@ -462,4 +470,3 @@ function Auth({ defaultMode = "login" }) {
 }
 
 export default Auth;
-

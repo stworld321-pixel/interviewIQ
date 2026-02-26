@@ -15,15 +15,24 @@ function AdminDashboard() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [statsRes, usersRes, earningsRes] = await Promise.all([
+      setMessage("");
+      const [statsRes, usersRes, earningsRes] = await Promise.allSettled([
         axios.get(ServerUrl + "/api/admin/stats", { withCredentials: true }),
         axios.get(ServerUrl + "/api/admin/users", { withCredentials: true }),
         axios.get(ServerUrl + "/api/admin/earnings", { withCredentials: true }),
       ]);
 
-      setStats(statsRes.data);
-      setUsers(usersRes.data);
-      setEarnings(earningsRes.data);
+      if (statsRes.status === "fulfilled") setStats(statsRes.value.data);
+      if (usersRes.status === "fulfilled") setUsers(usersRes.value.data);
+      if (earningsRes.status === "fulfilled") setEarnings(earningsRes.value.data);
+
+      const failed = [statsRes, usersRes, earningsRes].find((r) => r.status === "rejected");
+      if (failed) {
+        setMessage(
+          failed.reason?.response?.data?.message ||
+            "Some admin data could not be loaded. Please refresh."
+        );
+      }
     } catch (error) {
       setMessage(error?.response?.data?.message || "Failed to load admin dashboard");
     } finally {

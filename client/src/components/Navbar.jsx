@@ -28,6 +28,8 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       await axios.get(ServerUrl + "/api/auth/logout", { withCredentials: true });
+      localStorage.removeItem("token");
+      delete axios.defaults.headers.common.Authorization;
       dispatch(setUserData(null));
       setShowCreditPopup(false);
       setShowUserPopup(false);

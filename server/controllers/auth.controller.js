@@ -73,7 +73,7 @@ export const register = async (req,res) => {
         const token = await genToken(user._id)
         setAuthCookie(res, token)
 
-        return res.status(201).json(publicUser(user))
+        return res.status(201).json({ ...publicUser(user), token })
     } catch (error) {
         return res.status(500).json({message:`Register error ${error}`})
     }
@@ -111,7 +111,7 @@ export const login = async (req,res) => {
         const token = await genToken(user._id)
         setAuthCookie(res, token)
 
-        return res.status(200).json(publicUser(user))
+        return res.status(200).json({ ...publicUser(user), token })
     } catch (error) {
         console.error("Login error:", error)
         return res.status(500).json({message:`Login error ${error}`})
@@ -151,7 +151,7 @@ export const googleAuth = async (req,res) => {
         const token = await genToken(user._id)
         setAuthCookie(res, token)
 
-        return res.status(200).json(publicUser(user))
+        return res.status(200).json({ ...publicUser(user), token })
 
 
 
