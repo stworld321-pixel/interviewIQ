@@ -9,12 +9,12 @@ const isAuth = async (req,res,next) => {
         const token = cookieToken || bearerToken
 
         if(!token){
-            return res.status(400).json({message:"user does not have a token"})
+            return res.status(401).json({message:"User is not authenticated"})
         }
         const verifyToken = jwt.verify(token , process.env.JWT_SECRET)
         
         if(!verifyToken){
-            return res.status(400).json({message:"user does not have a valid token"})
+            return res.status(401).json({message:"Invalid token"})
         }
         req.userId = verifyToken.userId
 
@@ -22,6 +22,9 @@ const isAuth = async (req,res,next) => {
    
 
     } catch (error) {
+        if (error.name === "TokenExpiredError" || error.name === "JsonWebTokenError") {
+            return res.status(401).json({ message: "Invalid or expired token" })
+        }
         return res.status(500).json({message:`isAuth error ${error}`})
     }
     

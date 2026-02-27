@@ -24,6 +24,7 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const userInitial = userData?.name?.[0]?.toUpperCase() || null;
 
   const handleLogout = async () => {
     try {
@@ -121,7 +122,7 @@ function Navbar() {
               }}
               className="w-9 h-9 bg-black text-white rounded-full flex items-center justify-center font-semibold"
             >
-              {userData ? userData?.name.slice(0, 1).toUpperCase() : <FaUserAstronaut size={15} />}
+              {userData && userInitial ? userInitial : <FaUserAstronaut size={15} />}
             </button>
 
             {showUserPopup && (

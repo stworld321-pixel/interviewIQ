@@ -68,7 +68,11 @@ function App() {
         const result = await axios.get(ServerUrl + "/api/user/current-user", {withCredentials:true})
         dispatch(setUserData(result.data))
       } catch (error) {
-        console.log(error)
+        const status = error?.response?.status
+        // 401 is expected when user is not logged in.
+        if (status && status !== 401) {
+          console.log(error)
+        }
         dispatch(setUserData(null))
       } finally {
         dispatch(setAuthChecked(true))
