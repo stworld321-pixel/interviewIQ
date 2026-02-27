@@ -82,6 +82,10 @@ function Auth({ defaultMode = "login" }) {
 
   const handleGoogleAuth = async () => {
     try {
+      if (!auth || !provider) {
+        setError("Google sign-in is not configured on this deployment.");
+        return;
+      }
       setError("");
       setLoading(true);
       const response = await signInWithPopup(auth, provider);
