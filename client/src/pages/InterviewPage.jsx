@@ -10,7 +10,7 @@ function InterviewPage() {
     const [interviewData,setInterviewData] = useState(null)
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='min-h-screen bg-gradient-to-b from-[#f4f8ff] to-[#eaf2fb]'>
         <Navbar />
         {step===1 && (
             <Step1SetUp onStart={(data)=>{

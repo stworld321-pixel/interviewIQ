@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { motion } from "motion/react"
@@ -66,7 +66,7 @@ function Step3Report({ report }) {
   // ================= TITLE =================
   doc.setFont("helvetica", "bold");
   doc.setFontSize(20);
-  doc.setTextColor(34, 197, 94);
+  doc.setTextColor(11, 60, 109);
   doc.text("AI Interview Performance Report", pageWidth / 2, currentY, {
     align: "center",
   });
@@ -74,13 +74,13 @@ function Step3Report({ report }) {
   currentY += 5;
 
   // underline
-  doc.setDrawColor(34, 197, 94);
+  doc.setDrawColor(30, 136, 229);
   doc.line(margin, currentY + 2, pageWidth - margin, currentY + 2);
 
   currentY += 15;
 
   // ================= FINAL SCORE BOX =================
-  doc.setFillColor(240, 253, 244);
+  doc.setFillColor(238, 245, 255);
   doc.roundedRect(margin, currentY, contentWidth, 20, 4, 4, "F");
 
   doc.setFontSize(14);
@@ -152,7 +152,7 @@ function Step3Report({ report }) {
     valign: "top",
   },
   headStyles: {
-    fillColor: [34, 197, 94],
+    fillColor: [11, 60, 109],
     textColor: 255,
     halign: "center",
   },
@@ -172,7 +172,7 @@ function Step3Report({ report }) {
 };
 
   return (
-    <div className='min-h-screen bg-linear-to-br from-gray-50 to-green-50 px-4 sm:px-6 lg:px-10 py-8'>
+    <div className='min-h-screen bg-linear-to-br from-[#f3f8ff] to-[#eaf2fb] px-4 sm:px-6 lg:px-10 py-8'>
       <div className='mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
         <div className='md:mb-10 w-full flex items-start gap-4 flex-wrap'>
           <button
@@ -190,7 +190,7 @@ function Step3Report({ report }) {
           </div>
         </div>
 
-        <button onClick={downloadPDF} className='bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl shadow-md transition-all duration-300 font-semibold text-sm sm:text-base text-nowrap'>Download PDF</button>
+        <button onClick={downloadPDF} className='bg-[#0B3C6D] hover:bg-[#1E88E5] text-white px-6 py-3 rounded-xl shadow-md transition-all duration-300 font-semibold text-sm sm:text-base text-nowrap'>Download PDF</button>
       </div>
 
 
@@ -247,11 +247,11 @@ function Step3Report({ report }) {
                     <div className='flex justify-between mb-2 text-sm sm:text-base'>
 
                       <span>{s.label}</span>
-                      <span className='font-semibold text-green-600'>{s.value}</span>
+                      <span className='font-semibold text-[#0B3C6D]'>{s.value}</span>
                     </div>
 
                     <div className='bg-gray-200 h-2 sm:h-3 rounded-full'>
-                      <div className='bg-green-500 h-full rounded-full'
+                      <div className='bg-[#1E88E5] h-full rounded-full'
                         style={{ width: `${s.value * 10}%` }}
 
                       ></div>
@@ -289,8 +289,8 @@ function Step3Report({ report }) {
                   <Tooltip />
                   <Area type="monotone"
                     dataKey="score"
-                    stroke="#22c55e"
-                    fill="#bbf7d0"
+                    stroke="#1E88E5"
+                    fill="#bfdbfe"
                     strokeWidth={3} />
 
 
@@ -327,13 +327,13 @@ function Step3Report({ report }) {
                     </div>
 
 
-                    <div className='bg-green-100 text-green-600 px-3 py-1 rounded-full font-bold text-xs sm:text-sm w-fit'>
+                    <div className='bg-green-100 text-[#0B3C6D] px-3 py-1 rounded-full font-bold text-xs sm:text-sm w-fit'>
                       {q.score ?? 0}/10
                     </div>
                   </div>
 
-                  <div className='bg-green-50 border border-green-200 p-4 rounded-lg'>
-                    <p className='text-xs text-green-600 font-semibold mb-1'>
+                  <div className='bg-[#eef5ff] border border-[#cfe0f7] p-4 rounded-lg'>
+                    <p className='text-xs text-[#0B3C6D] font-semibold mb-1'>
                       AI Feedback
                     </p>
                     <p className='text-sm text-gray-700 leading-relaxed'>
@@ -362,3 +362,4 @@ function Step3Report({ report }) {
 }
 
 export default Step3Report
+

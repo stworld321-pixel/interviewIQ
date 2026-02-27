@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import maleVideo from "../assets/videos/male-ai.mp4"
 import femaleVideo from "../assets/videos/female-ai.mp4"
 import Timer from './Timer'
@@ -328,7 +328,7 @@ setIsSubmitting(false)
 
 
   return (
-    <div className='min-h-screen bg-linear-to-br from-emerald-50 via-white to-teal-100 flex items-center justify-center p-4 sm:p-6'>
+    <div className='min-h-screen bg-linear-to-br from-[#eef5ff] via-white to-[#eaf2fb] flex items-center justify-center p-4 sm:p-6'>
       <div className='w-full max-w-350 min-h-[80vh] bg-white rounded-3xl shadow-2xl border border-gray-200 flex flex-col lg:flex-row overflow-hidden'>
 
         {/* video section */}
@@ -359,7 +359,7 @@ setIsSubmitting(false)
               <span className='text-sm text-gray-500'>
                 Interview Status
               </span>
-              {isAIPlaying && <span className='text-sm font-semibold text-emerald-600'>
+              {isAIPlaying && <span className='text-sm font-semibold text-[#0B3C6D]'>
                 {isAIPlaying ? "AI Speaking" : ""}
               </span>}
             </div>
@@ -375,12 +375,12 @@ setIsSubmitting(false)
 
             <div className='grid grid-cols-2 gap-6 text-center'>
               <div>
-                <span className='text-2xl font-bold text-emerald-600'>{currentIndex + 1}</span>
+                <span className='text-2xl font-bold text-[#0B3C6D]'>{currentIndex + 1}</span>
                 <span className='text-xs text-gray-400'>Current Questions</span>
               </div>
 
               <div>
-                <span className='text-2xl font-bold text-emerald-600'>{questions.length}</span>
+                <span className='text-2xl font-bold text-[#0B3C6D]'>{questions.length}</span>
                 <span className='text-xs text-gray-400'>Total Questions</span>
               </div>
             </div>
@@ -392,7 +392,7 @@ setIsSubmitting(false)
         {/* Text section */}
 
         <div className='flex-1 flex flex-col p-4 sm:p-6 md:p-8 relative'>
-          <h2 className='text-xl sm:text-2xl font-bold text-emerald-600 mb-6'>
+          <h2 className='text-xl sm:text-2xl font-bold text-[#0B3C6D] mb-6'>
             AI Smart Interview
           </h2>
 
@@ -409,7 +409,7 @@ setIsSubmitting(false)
             placeholder="Type your answer here..."
             onChange={(e) => setAnswer(e.target.value)}
             value={answer}
-            className="flex-1 bg-gray-100 p-4 sm:p-6 rounded-2xl resize-none outline-none border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition text-gray-800" />
+            className="flex-1 bg-gray-100 p-4 sm:p-6 rounded-2xl resize-none outline-none border border-gray-200 focus:ring-2 focus:ring-[#1E88E5] transition text-gray-800" />
 
 
          {!feedback ? ( <div className='flex items-center gap-4 mt-6'>
@@ -424,7 +424,7 @@ setIsSubmitting(false)
             onClick={submitAnswer}
             disabled={isSubmitting}
               whileTap={{ scale: 0.95 }}
-              className='flex-1 bg-gradient-to-r from-emerald-600 to-teal-500 text-white py-3 sm:py-4 rounded-2xl shadow-lg hover:opacity-90 transition font-semibold disabled:bg-gray-500'>
+              className='flex-1 bg-gradient-to-r from-[#0B3C6D] to-[#1E88E5] text-white py-3 sm:py-4 rounded-2xl shadow-lg hover:opacity-90 transition font-semibold disabled:bg-gray-500'>
               {isSubmitting?"Submitting...":"Submit Answer"}
 
             </motion.button>
@@ -433,13 +433,13 @@ setIsSubmitting(false)
             <motion.div 
              initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-            className='mt-6 bg-emerald-50 border border-emerald-200 p-5 rounded-2xl shadow-sm'>
-              <p className='text-emerald-700 font-medium mb-4'>{feedback}</p>
+            className='mt-6 bg-[#eef5ff] border border-[#cfe0f7] p-5 rounded-2xl shadow-sm'>
+              <p className='text-[#0B3C6D] font-medium mb-4'>{feedback}</p>
 
               <button
               onClick={handleNext}
 
-               className='w-full bg-gradient-to-r from-emerald-600 to-teal-500 text-white py-3 rounded-xl shadow-md hover:opacity-90 transition flex items-center justify-center gap-1'>
+               className='w-full bg-gradient-to-r from-[#0B3C6D] to-[#1E88E5] text-white py-3 rounded-xl shadow-md hover:opacity-90 transition flex items-center justify-center gap-1'>
                 Next Question <BsArrowRight size={18}/>
               </button>
 
@@ -453,3 +453,4 @@ setIsSubmitting(false)
 }
 
 export default Step2Interview
+

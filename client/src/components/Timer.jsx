@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 function Timer({ timeLeft, totalTime }) {
@@ -10,8 +10,8 @@ function Timer({ timeLeft, totalTime }) {
         text={`${timeLeft}s`}
         styles={buildStyles({
           textSize: "28px",
-          pathColor: "#10b981",
-          textColor: "#ef4444",
+          pathColor: "#1E88E5",
+          textColor: "#0B3C6D",
           trailColor: "#e5e7eb",
         })}
         />
@@ -21,3 +21,4 @@ function Timer({ timeLeft, totalTime }) {
 }
 
 export default Timer
+
