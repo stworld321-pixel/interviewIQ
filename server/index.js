@@ -19,6 +19,7 @@ const deployedOrigins = (process.env.CLIENT_URL || "")
 
 const allowedOrigins = [...new Set([...localOrigins, ...deployedOrigins])];
 const renderDomainRegex = /^https:\/\/[a-z0-9-]+\.onrender\.com$/i;
+const vpsDomainRegex = /^https?:\/\/([a-z0-9-]+\.)?(localjobshub\.in|localjobshubs\.in)$/i;
 
 const app = express()
 app.set("trust proxy", 1)
@@ -26,7 +27,7 @@ app.use(cors({
     origin: (origin, callback) => {
         // Allow non-browser tools (no Origin header)
         if (!origin) return callback(null, true)
-        if (allowedOrigins.includes(origin) || renderDomainRegex.test(origin)) {
+        if (allowedOrigins.includes(origin) || renderDomainRegex.test(origin) || vpsDomainRegex.test(origin)) {
             return callback(null, true)
         }
         return callback(new Error(`CORS blocked for origin: ${origin}`))
