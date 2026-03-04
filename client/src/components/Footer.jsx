@@ -18,6 +18,7 @@ function Footer() {
 
           <div className="flex flex-wrap gap-4 text-sm">
             <Link to="/" className="text-slate-600 hover:text-black">Home</Link>
+            <Link to="/blog" className="text-slate-600 hover:text-black">Blog</Link>
             <Link to="/about" className="text-slate-600 hover:text-black">About</Link>
             <Link to="/contact" className="text-slate-600 hover:text-black">Contact</Link>
             <Link to="/pricing" className="text-slate-600 hover:text-black">Pricing</Link>

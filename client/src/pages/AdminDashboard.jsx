@@ -3,6 +3,7 @@ import axios from "axios";
 import { BsCurrencyRupee, BsGraphUpArrow, BsPeople, BsTrash } from "react-icons/bs";
 import { ServerUrl } from "../App";
 import Navbar from "../components/Navbar";
+import { Link } from "react-router-dom";
 
 function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -102,6 +103,14 @@ function AdminDashboard() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
           <p className="text-slate-500 mt-1">User management, earnings and platform overview.</p>
+          <div className="mt-3">
+            <Link
+              to="/admin/blogs"
+              className="inline-flex items-center rounded-full bg-[#0B3C6D] text-white px-4 py-2 text-sm hover:bg-[#1E88E5] transition"
+            >
+              Open Blog Manager
+            </Link>
+          </div>
           {message && <p className="text-sm text-[#0B3C6D] mt-2">{message}</p>}
         </div>
 

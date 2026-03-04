@@ -1,5 +1,12 @@
 import express from "express"
-import { googleAuth, logOut, login, register } from "../controllers/auth.controller.js"
+import {
+  forgotPassword,
+  googleAuth,
+  logOut,
+  login,
+  register,
+  resetPassword,
+} from "../controllers/auth.controller.js"
 
 const authRouter = express.Router()
 
@@ -7,6 +14,8 @@ const authRouter = express.Router()
 authRouter.post("/register",register)
 authRouter.post("/login",login)
 authRouter.post("/google",googleAuth)
+authRouter.post("/forgot-password", forgotPassword)
+authRouter.post("/reset-password/:token", resetPassword)
 authRouter.get("/logout",logOut)
 
 

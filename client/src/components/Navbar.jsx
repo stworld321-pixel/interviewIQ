@@ -12,9 +12,10 @@ import logo from "../assets/logo.png";
 
 const navItems = [
   { label: "Home", path: "/" },
-  { label: "About", path: "/about" },
-  { label: "Contact", path: "/contact" },
+  { label: "About Us", path: "/about" },
   { label: "Pricing", path: "/pricing" },
+  { label: "Blog", path: "/blog" },
+  { label: "Contact Us", path: "/contact" },
 ];
 
 function Navbar() {
@@ -30,6 +31,7 @@ function Navbar() {
     try {
       await axios.get(ServerUrl + "/api/auth/logout", { withCredentials: true });
       localStorage.removeItem("token");
+      localStorage.removeItem("userData");
       delete axios.defaults.headers.common.Authorization;
       dispatch(setUserData(null));
       setShowCreditPopup(false);
@@ -41,37 +43,47 @@ function Navbar() {
   };
 
   return (
-    <div className="bg-slate-50 flex justify-center px-4 pt-6">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/90 backdrop-blur-md">
       <motion.div
-        initial={{ opacity: 0, y: -30 }}
+        initial={{ opacity: 0, y: -16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        className="w-full max-w-6xl bg-white rounded-[24px] shadow-sm border border-slate-200 px-5 md:px-8 py-4 flex justify-between items-center relative"
+        transition={{ duration: 0.25 }}
+        className="max-w-7xl mx-auto px-4 md:px-6 h-20 flex justify-between items-center relative"
       >
         <button onClick={() => navigate("/")} className="flex items-center gap-3">
-          <img src={logo} alt="Brand logo" className="w-50 h-20 object-contain" />
+          <img src={logo} alt="Brand logo" className="w-24 h-24 object-contain" />
         </button>
 
-        <nav className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `px-3 py-2 rounded-lg text-sm transition ${
-                  isActive ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100"
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+        <nav className="hidden md:flex items-center gap-5">
+          {navItems.map((item) =>
+            item.href ? (
+              <a
+                key={item.label}
+                href={item.href}
+                className="text-sm font-medium text-slate-700 hover:text-[#1E88E5] transition-colors"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
+                  `text-sm font-medium transition-colors ${
+                    isActive ? "text-[#0B3C6D]" : "text-slate-700 hover:text-[#1E88E5]"
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            )
+          )}
           {userData?.role === "admin" && (
             <NavLink
               to="/admin"
               className={({ isActive }) =>
-                `px-3 py-2 rounded-lg text-sm transition ${
-                  isActive ? "bg-[#0B3C6D] text-white" : "text-[#0B3C6D] hover:bg-blue-50"
+                `text-sm font-medium transition-colors ${
+                  isActive ? "text-[#0B3C6D]" : "text-slate-700 hover:text-[#1E88E5]"
                 }`
               }
             >
@@ -102,7 +114,7 @@ function Navbar() {
                 <p className="text-sm text-slate-600 mb-3">Need more credits for more interviews?</p>
                 <button
                   onClick={() => navigate("/pricing")}
-                  className="w-full bg-black text-white py-2 rounded-lg text-sm"
+                  className="w-full bg-[#0B3C6D] hover:bg-[#1E88E5] text-white py-2 rounded-lg text-sm transition"
                 >
                   View Plans
                 </button>
@@ -120,14 +132,14 @@ function Navbar() {
                 setShowUserPopup(!showUserPopup);
                 setShowCreditPopup(false);
               }}
-              className="w-9 h-9 bg-black text-white rounded-full flex items-center justify-center font-semibold"
+              className="w-9 h-9 bg-[#0B3C6D] text-white rounded-full flex items-center justify-center font-semibold"
             >
               {userData && userInitial ? userInitial : <FaUserAstronaut size={15} />}
             </button>
 
             {showUserPopup && (
               <div className="absolute right-0 mt-3 w-52 bg-white shadow-xl border border-slate-200 rounded-xl p-4 z-50">
-                <p className="text-sm text-emerald-700 font-medium mb-2 truncate">{userData?.name}</p>
+                <p className="text-sm text-[#0B3C6D] font-medium mb-2 truncate">{userData?.name}</p>
                 <button
                   onClick={() => navigate("/history")}
                   className="w-full text-left text-sm py-2 hover:text-black text-slate-600"
@@ -143,7 +155,7 @@ function Navbar() {
           </div>
         </div>
       </motion.div>
-    </div>
+    </header>
   );
 }
 

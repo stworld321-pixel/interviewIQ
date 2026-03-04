@@ -23,6 +23,8 @@ import { ServerUrl } from "../App";
 import { setUserData } from "../redux/userSlice";
 import signupImage from "../assets/Signup.png";
 import logo from "../assets/logo.png";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 function Auth({ defaultMode = "login" }) {
   const isRegister = defaultMode === "register";
@@ -70,11 +72,11 @@ function Auth({ defaultMode = "login" }) {
         localStorage.setItem("token", result.data.token);
         axios.defaults.headers.common.Authorization = `Bearer ${result.data.token}`;
       }
+      localStorage.setItem("userData", JSON.stringify(result.data));
       dispatch(setUserData(result.data));
       navigate(redirectTo, { replace: true });
     } catch (apiError) {
       setError(apiError?.response?.data?.message || "Authentication failed.");
-      dispatch(setUserData(null));
     } finally {
       setLoading(false);
     }
@@ -99,12 +101,12 @@ function Auth({ defaultMode = "login" }) {
         localStorage.setItem("token", result.data.token);
         axios.defaults.headers.common.Authorization = `Bearer ${result.data.token}`;
       }
+      localStorage.setItem("userData", JSON.stringify(result.data));
       dispatch(setUserData(result.data));
       navigate(redirectTo, { replace: true });
     } catch (err) {
       console.log(err);
       setError("Google sign-in failed.");
-      dispatch(setUserData(null));
     } finally {
       setLoading(false);
     }
@@ -112,21 +114,22 @@ function Auth({ defaultMode = "login" }) {
 
   if (isRegister) {
     return (
-      <div className="font-display bg-[#f6f6f8] text-slate-900 antialiased h-screen overflow-hidden">
-        <div className="flex h-full w-full">
-          <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-[#0B3C6D]/10">
-            <div className="absolute inset-0 z-0 opacity-40 bg-gradient-to-br from-[#0B3C6D] via-[#0B3C6D]/50 to-transparent"></div>
+      <div className="font-display bg-[#f6f6f8] text-slate-900 antialiased min-h-screen">
+        <Navbar />
+        <div className="flex min-h-[calc(100vh-160px)] w-full">
+          <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-[#0B3C6D] via-[#1E88E5] to-[#0B3C6D]">
+            <div className="absolute inset-0 z-0 opacity-25 bg-[radial-gradient(circle_at_top_right,#fb923c_0%,transparent_40%),radial-gradient(circle_at_bottom_left,#fdba74_0%,transparent_45%)]"></div>
             <div className="absolute inset-0 z-10 flex flex-col justify-center px-20">
               <div className="mb-8">
                 <div className="flex items-center gap-2 mb-6">
                   <img src={logo} alt="Brand logo" className="w-50 h-50 object-contain" />
                 </div>
-                <h1 className="text-6xl font-black leading-tight mb-6 text-slate-900">
+                <h1 className="text-6xl font-black leading-tight mb-6 text-white">
                   The future of <br />
-                  <span className="text-[#0B3C6D]">interview prep</span> <br />
+                  <span className="text-[#fdba74]">interview prep</span> <br />
                   is here.
                 </h1>
-                <p className="text-xl text-slate-600 max-w-md leading-relaxed">
+                <p className="text-xl text-slate-100/90 max-w-md leading-relaxed">
                   Join professionals using our AI assistant to land their dream roles.
                 </p>
               </div>
@@ -141,18 +144,18 @@ function Auth({ defaultMode = "login" }) {
 
               <div className="mt-12 flex gap-8">
                 <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-slate-900">98%</span>
-                  <span className="text-sm text-slate-500 uppercase tracking-widest font-semibold">Success Rate</span>
+                  <span className="text-2xl font-bold text-white">98%</span>
+                  <span className="text-sm text-slate-200 uppercase tracking-widest font-semibold">Success Rate</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-slate-900">200+</span>
-                  <span className="text-sm text-slate-500 uppercase tracking-widest font-semibold">Skill Modules</span>
+                  <span className="text-2xl font-bold text-white">200+</span>
+                  <span className="text-sm text-slate-200 uppercase tracking-widest font-semibold">Skill Modules</span>
                 </div>
               </div>
             </div>
 
-            <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#0B3C6D]/20 rounded-full blur-3xl"></div>
-            <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#0B3C6D]/30 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#fb923c]/25 rounded-full blur-3xl"></div>
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#fdba74]/25 rounded-full blur-3xl"></div>
           </div>
 
           <div className="w-full lg:w-1/2 h-full flex flex-col bg-white overflow-y-auto">
@@ -265,7 +268,7 @@ function Auth({ defaultMode = "login" }) {
                   {error && <p className="text-sm text-red-500">{error}</p>}
 
                   <button
-                    className="w-full py-4 bg-gradient-to-r from-[#0B3C6D] to-[#1E88E5] text-white font-bold rounded-xl shadow-lg shadow-[#0B3C6D]/25 hover:shadow-[#0B3C6D]/40 active:scale-[0.98] transition-all mt-4 disabled:opacity-60"
+                    className="w-full py-4 bg-gradient-to-r from-[#0B3C6D] via-[#1E88E5] to-[#f97316] text-white font-bold rounded-xl shadow-lg shadow-[#0B3C6D]/25 hover:shadow-[#f97316]/30 active:scale-[0.98] transition-all mt-4 disabled:opacity-60"
                     type="submit"
                     disabled={loading}
                   >
@@ -286,23 +289,22 @@ function Auth({ defaultMode = "login" }) {
                   <button
                     onClick={handleGoogleAuth}
                     disabled={loading}
-                    className="flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-60"
+                    className="col-span-2 flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-60"
                   >
                     <BsGoogle className="text-[#4285F4]" />
                     <span className="text-sm font-bold text-slate-700">Google</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
-                  >
-                    <BsLinkedin className="text-[#0077B5]" />
-                    <span className="text-sm font-bold text-slate-700">LinkedIn</span>
                   </button>
                 </div>
 
                 <p className="text-center text-xs text-slate-400 mt-10 px-8">
                   By signing up, you agree to our <button type="button" className="underline">Terms of Service</button> and{" "}
                   <button type="button" className="underline">Privacy Policy</button>.
+                </p>
+                <p className="text-center text-sm text-slate-600 mt-5">
+                  Already have an account?{" "}
+                  <Link className="text-[#0B3C6D] font-bold hover:underline" to="/login">
+                    Login
+                  </Link>
                 </p>
               </motion.div>
             </div>
@@ -314,7 +316,8 @@ function Auth({ defaultMode = "login" }) {
 
   return (
     <div className="min-h-screen bg-[#f6f6f8] text-slate-900">
-      <div className="flex min-h-screen">
+      <Navbar />
+      <div className="flex min-h-[calc(100vh-160px)]">
         <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center p-12 overflow-hidden bg-slate-900">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,#1d4ed8_0%,transparent_42%),radial-gradient(circle_at_top_right,#0B3C6D_0%,transparent_40%),radial-gradient(circle_at_bottom_right,#1e3a8a_0%,transparent_45%)]" />
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#0B3C6D]/20 rounded-full blur-[100px]" />
@@ -323,7 +326,7 @@ function Auth({ defaultMode = "login" }) {
           <div className="relative z-10 w-full max-w-lg">
             <div className="rounded-xl p-8 shadow-2xl border border-white/20 bg-white/10 backdrop-blur-xl">
               <div className="flex items-center gap-3 mb-6">
-                <img src={logo} alt="Brand logo" className="w-12 h-12 object-contain" />
+                <img src={logo} alt="Brand logo" className="w-20 h-15 object-contain" />
                 <h3 className="text-white font-bold text-xl">AI Feedback Insight</h3>
               </div>
 
@@ -382,9 +385,9 @@ function Auth({ defaultMode = "login" }) {
               <div>
                 <div className="flex justify-between mb-2">
                   <label className="block text-sm font-semibold text-slate-700">Password</label>
-                  <button type="button" className="text-sm font-semibold text-[#0B3C6D] hover:text-[#1E88E5] transition-colors">
+                  <Link to="/forgot-password" className="text-sm font-semibold text-[#0B3C6D] hover:text-[#1E88E5] transition-colors">
                     Forgot password?
-                  </button>
+                  </Link>
                 </div>
 
                 <div className="relative">
@@ -442,15 +445,9 @@ function Auth({ defaultMode = "login" }) {
               <button
                 onClick={handleGoogleAuth}
                 disabled={loading}
-                className="flex items-center justify-center gap-2 py-3 px-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors font-medium text-slate-700 disabled:opacity-60"
+                className="col-span-2 flex items-center justify-center gap-2 py-3 px-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors font-medium text-slate-700 disabled:opacity-60"
               >
                 <BsGoogle className="text-[#0B3C6D]" /> Google
-              </button>
-              <button
-                type="button"
-                className="flex items-center justify-center gap-2 py-3 px-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors font-medium text-slate-700"
-              >
-                <BsLinkedin className="text-[#0A66C2]" /> LinkedIn
               </button>
             </div>
 
@@ -469,6 +466,7 @@ function Auth({ defaultMode = "login" }) {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

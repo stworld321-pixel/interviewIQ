@@ -38,6 +38,28 @@ const interviewSchema = new mongoose.Schema({
     questions:[questionsSchema],
 
     finalScore: { type: Number, default: 0 },
+    planTypeSnapshot: {
+      type: String,
+      enum: ["free", "starter", "pro"],
+      default: "free",
+    },
+    reportTier: {
+      type: String,
+      enum: ["free", "starter", "pro"],
+      default: "free",
+    },
+    transcriptText: {
+      type: String,
+      default: "",
+    },
+    reportData: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+    reportRawOutput: {
+      type: String,
+      default: "",
+    },
 
     status: {
       type: String,

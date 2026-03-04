@@ -25,9 +25,22 @@ const userSchema = new mongoose.Schema({
         enum:["user","admin"],
         default:"user"
     },
+    planType: {
+        type: String,
+        enum: ["free", "starter", "pro"],
+        default: "free"
+    },
     credits:{
         type:Number,
         default:100
+    },
+    resetPasswordToken: {
+        type: String,
+        select: false
+    },
+    resetPasswordExpires: {
+        type: Date,
+        select: false
     }
 
 }, {timestamps:true})

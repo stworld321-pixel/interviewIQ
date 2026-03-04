@@ -29,6 +29,7 @@ function Step2Interview({ interviewData, onFinish }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [voiceGender, setVoiceGender] = useState("female");
   const [subtitle, setSubtitle] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
 
   const videoRef = useRef(null);
@@ -249,6 +250,7 @@ function Step2Interview({ interviewData, onFinish }) {
     if (isSubmitting) return;
     stopMic()
     setIsSubmitting(true)
+    setSubmitError("")
 
     try {
       const result = await axios.post(ServerUrl + "/api/interview/submit-answer", {
@@ -257,20 +259,29 @@ function Step2Interview({ interviewData, onFinish }) {
         answer,
         timeTaken:
           currentQuestion.timeLimit - timeLeft,
-      } , {withCredentials:true})
+      } , {withCredentials:true, timeout: 30000})
 
-      setFeedback(result.data.feedback)
-      speakText(result.data.feedback)
-      setIsSubmitting(false)
+      const serverFeedback = result?.data?.feedback || "Answer submitted successfully.";
+      setFeedback(serverFeedback)
+      speakText(serverFeedback)
     } catch (error) {
-console.log(error)
-setIsSubmitting(false)
+      console.log(error)
+      const status = error?.response?.status;
+      const message =
+        error?.response?.data?.message ||
+        (status === 401 ? "Session expired. Please login again." : "") ||
+        (error?.code === "ECONNABORTED" ? "Request timed out. Please retry." : "") ||
+        "Unable to submit answer. Please try again.";
+      setSubmitError(message);
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   const handleNext =async () => {
     setAnswer("");
     setFeedback("");
+    setSubmitError("");
 
     if (currentIndex + 1 >= questions.length) {
       finishInterview();
@@ -444,6 +455,9 @@ setIsSubmitting(false)
               </button>
 
             </motion.div>
+          )}
+          {submitError && !feedback && (
+            <p className='mt-3 text-sm text-red-600 font-medium'>{submitError}</p>
           )}
         </div>
       </div>

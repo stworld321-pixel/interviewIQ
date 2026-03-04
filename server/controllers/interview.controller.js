@@ -1,6 +1,7 @@
 import fs from "fs"
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { askAi } from "../services/openRouter.service.js";
+import { generatePlanReport, sanitizeTieredReport } from "../services/planReport.service.js";
 import User from "../models/user.model.js";
 import Interview from "../models/interview.model.js";
 
@@ -372,8 +373,50 @@ export const finishInterview = async (req,res) => {
       ? totalCorrectness / totalQuestions
       : 0;
 
+    const user = await User.findById(interview.userId).select("planType");
+    const planType = user?.planType || "free";
+
+    let planReportData = {};
+    let planReportRaw = "";
+    let transcriptText = "";
+
+    try {
+      const history = await Interview.find({
+        userId: interview.userId,
+        status: "completed",
+        _id: { $ne: interview._id },
+      })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .select("finalScore");
+
+      const historicalScores = history.map((h) => Number(h.finalScore || 0).toFixed(1));
+      const tieredReport = await generatePlanReport({
+        planType,
+        role: interview.role,
+        experience: interview.experience,
+        mode: interview.mode,
+        questions: interview.questions,
+        historicalScores,
+      });
+      planReportData = tieredReport.parsed || {};
+      planReportRaw = tieredReport.rawOutput || "";
+      transcriptText = tieredReport.transcript || "";
+    } catch (reportError) {
+      planReportData = {
+        fallback: true,
+        message: "Tiered report generation failed. Basic analytics shown.",
+      };
+      planReportRaw = String(reportError?.message || reportError);
+    }
+
     interview.finalScore = finalScore;
     interview.status = "completed";
+    interview.planTypeSnapshot = planType;
+    interview.reportTier = planType;
+    interview.reportData = planReportData;
+    interview.reportRawOutput = planReportRaw;
+    interview.transcriptText = transcriptText;
 
     await interview.save();
 
@@ -390,6 +433,9 @@ export const finishInterview = async (req,res) => {
         communication: q.communication || 0,
         correctness: q.correctness || 0,
       })),
+      planType,
+      reportTier: planType,
+      tieredReport: sanitizeTieredReport(planType, planReportData),
     })
   } catch (error) {
     return res.status(500).json({message:`failed to finish Interview ${error}`})
@@ -442,12 +488,16 @@ export const getInterviewReport = async (req,res) => {
       ? totalCorrectness / totalQuestions
       : 0;
 
+    const tier = interview.reportTier || interview.planTypeSnapshot || "free";
        return res.json({
       finalScore: interview.finalScore,
       confidence: Number(avgConfidence.toFixed(1)),
       communication: Number(avgCommunication.toFixed(1)),
       correctness: Number(avgCorrectness.toFixed(1)),
-      questionWiseScore: interview.questions
+      questionWiseScore: interview.questions,
+      planType: interview.planTypeSnapshot || tier,
+      reportTier: tier,
+      tieredReport: sanitizeTieredReport(tier, interview.reportData || {}),
     });
 
   } catch (error) {

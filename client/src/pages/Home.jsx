@@ -3,7 +3,6 @@ import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
-  BsArrowRight,
   BsBarChart,
   BsCheckCircle,
   BsClock,
@@ -16,6 +15,8 @@ import {
   BsTerminal,
 } from "react-icons/bs";
 import logo from "../assets/logo.png";
+import heroImage from "../assets/MM.png";
+import Navbar from "../components/Navbar";
 
 function Home() {
   const { userData } = useSelector((state) => state.user);
@@ -31,99 +32,82 @@ function Home() {
 
   return (
     <div className="bg-gradient-to-b from-white via-[#f6f9ff] to-[#eef5ff] text-slate-900">
-      <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <button onClick={() => navigate("/")} className="flex items-center gap-2">
-            <img src={logo} alt="Brand logo" className="w-50 h-50 object-contain" />
-          </button>
-
-          <nav className="hidden md:flex items-center gap-8">
-            <a className="text-sm font-medium hover:text-[#1E88E5] transition-colors" href="#how-it-works">
-              How It Works
-            </a>
-            <a className="text-sm font-medium hover:text-[#1E88E5] transition-colors" href="#features">
-              Features
-            </a>
-            <a className="text-sm font-medium hover:text-[#1E88E5] transition-colors" href="#pricing">
-              Pricing
-            </a>
-            <a className="text-sm font-medium hover:text-[#1E88E5] transition-colors" href="#about">
-              About
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate("/login")}
-              className="hidden sm:block text-sm font-bold hover:text-[#1E88E5] transition-colors px-4 py-2"
-            >
-              Log In
-            </button>
-            <button
-              onClick={() => gateAndGo("/interview")}
-              className="bg-[#0B3C6D] hover:bg-[#1E88E5] text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-[#1E88E5]/25"
-            >
-              Start Interview
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main>
-        <section className="relative pt-20 pb-24 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+        <section className="relative pt-16 pb-24 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-[#1E88E5]/20 blur-3xl"></div>
+            <div className="absolute -bottom-20 right-0 h-80 w-80 rounded-full bg-[#F97316]/15 blur-3xl"></div>
+          </div>
+          <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45 }}
-              className="flex flex-col gap-8"
+              className="flex flex-col gap-8 lg:col-span-5"
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1E88E5]/10 text-[#0B3C6D] text-xs font-bold uppercase tracking-wider w-fit">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1E88E5] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1E88E5]"></span>
-                </span>
-                New: Resume-Based Analysis
+              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-[#1E88E5]/30 bg-white/80 px-4 py-2 text-xs font-semibold text-[#0B3C6D] shadow-sm">
+                Trusted by job seekers across HR and technical roles
               </div>
 
-              <h1 className="text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight">
-                AI-Powered <span className="text-[#1E88E5]">Smart Interview</span> Platform
+              <h1 className="text-3xl lg:text-5xl font-black leading-[1.1] tracking-tight text-[#0B3C6D]">
+                Practice <span className="text-[#F97316]">AI Mock Interviews</span> Before Your Next Job
               </h1>
 
               <p className="text-lg text-slate-600 leading-relaxed max-w-xl">
-                Master your next job interview with our advanced AI-driven simulation. Get real-time feedback, detailed performance analytics, and professional coaching.
+                Prepare for real job interviews with our free AI mock interview tool. Answer HR and technical questions, upload your resume, and receive an instant performance report on communication, confidence, and knowledge.
               </p>
 
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 items-center">
                 <button
                   onClick={() => gateAndGo("/interview")}
                   className="bg-[#0B3C6D] hover:bg-[#1E88E5] text-white font-bold px-8 py-4 rounded-xl transition-all shadow-xl shadow-[#1E88E5]/30 flex items-center gap-2"
                 >
-                  Start Interview <BsArrowRight />
+                  🚀 Start Free Interview
                 </button>
-                <button
-                  onClick={() => gateAndGo("/history")}
-                  className="bg-white border border-slate-200 font-bold px-8 py-4 rounded-xl hover:bg-slate-50 transition-all"
-                >
-                  View History
-                </button>
+                <p className="text-sm text-slate-500">No credit card required</p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 max-w-md">
+                <div className="rounded-xl bg-white border border-slate-200 px-4 py-3 shadow-sm">
+                  <p className="text-lg font-bold text-[#0B3C6D]">100+</p>
+                  <p className="text-xs text-slate-500">Free Credits</p>
+                </div>
+                <div className="rounded-xl bg-white border border-slate-200 px-4 py-3 shadow-sm">
+                  <p className="text-lg font-bold text-[#0B3C6D]">AI</p>
+                  <p className="text-xs text-slate-500">HR + Technical</p>
+                </div>
+                <div className="rounded-xl bg-white border border-slate-200 px-4 py-3 shadow-sm">
+                  <p className="text-lg font-bold text-[#0B3C6D]">Instant</p>
+                  <p className="text-xs text-slate-500">Report</p>
+                </div>
               </div>
             </motion.div>
 
-            <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-tr from-[#0B3C6D]/25 via-[#1E88E5]/20 to-transparent rounded-3xl blur-2xl"></div>
-              <div className="relative rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl overflow-hidden aspect-video flex items-center justify-center">
-                <div className="flex items-center justify-center gap-1 h-32 w-full">
-                  {[8, 16, 24, 32, 28, 20, 12, 6].map((h, i) => (
-                    <div
-                      key={i}
-                      className={`w-2 rounded-full ${i === 3 ? "bg-[#1E88E5]" : "bg-[#0B3C6D]/50"}`}
-                      style={{ height: `${h * 4}px` }}
-                    ></div>
-                  ))}
-                </div>
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.1 }}
+              className="relative lg:col-span-7"
+            >
+              <div className="absolute -inset-4 bg-gradient-to-tr from-[#0B3C6D]/30 via-[#1E88E5]/20 to-[#F97316]/10 rounded-3xl blur-2xl"></div>
+              <div className="relative rounded-[28px] border border-slate-200 bg-white p-3 shadow-2xl overflow-hidden min-h-[320px] md:min-h-[430px]">
+                <img
+                  src={heroImage}
+                  alt="AI mock interview assistant"
+                  className="w-full h-full rounded-2xl object-cover object-center"
+                />
               </div>
-            </div>
+              <div className="absolute -left-6 top-6 rounded-xl bg-white border border-slate-200 px-4 py-3 shadow-lg">
+                <p className="text-xs text-slate-500">Live Analysis</p>
+                <p className="text-sm font-semibold text-[#0B3C6D]">Confidence: 92%</p>
+              </div>
+              <div className="absolute -right-6 bottom-8 rounded-xl bg-white border border-slate-200 px-4 py-3 shadow-lg">
+                <p className="text-xs text-slate-500">Resume Match</p>
+                <p className="text-sm font-semibold text-[#0B3C6D]">Role Relevance: High</p>
+              </div>
+            </motion.div>
           </div>
         </section>
 
@@ -304,5 +288,3 @@ function Home() {
 }
 
 export default Home;
-
-

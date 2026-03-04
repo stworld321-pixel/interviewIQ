@@ -13,6 +13,11 @@ import InterviewReport from './pages/InterviewReport'
 import AboutUs from './pages/AboutUs'
 import ContactUs from './pages/ContactUs'
 import AdminDashboard from './pages/AdminDashboard'
+import Blog from './pages/Blog'
+import BlogDetail from './pages/BlogDetail'
+import AdminBlogs from './pages/AdminBlogs'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 
 export const ServerUrl =
   import.meta.env.VITE_API_URL ||
@@ -57,23 +62,37 @@ function App() {
   const dispatch = useDispatch()
   useEffect(()=>{
     const storedToken = localStorage.getItem("token")
+    const cachedUser = localStorage.getItem("userData")
     if (storedToken) {
       axios.defaults.headers.common.Authorization = `Bearer ${storedToken}`
+      if (cachedUser) {
+        try {
+          dispatch(setUserData(JSON.parse(cachedUser)))
+        } catch {
+          localStorage.removeItem("userData")
+        }
+      }
     } else {
       delete axios.defaults.headers.common.Authorization
+      localStorage.removeItem("userData")
     }
 
     const getUser = async () => {
       try {
         const result = await axios.get(ServerUrl + "/api/user/current-user", {withCredentials:true})
         dispatch(setUserData(result.data))
+        localStorage.setItem("userData", JSON.stringify(result.data))
       } catch (error) {
         const status = error?.response?.status
-        // 401 is expected when user is not logged in.
-        if (status && status !== 401) {
-          console.log(error)
+        if (status === 401) {
+          localStorage.removeItem("token")
+          localStorage.removeItem("userData")
+          delete axios.defaults.headers.common.Authorization
+          dispatch(setUserData(null))
+        } else {
+          // Keep existing cached session for transient server/network errors.
+          console.log("Auth check skipped due to non-auth error:", error?.message || error)
         }
-        dispatch(setUserData(null))
       } finally {
         dispatch(setAuthChecked(true))
       }
@@ -87,13 +106,18 @@ function App() {
       <Route path='/auth' element={<Auth/>}/>
       <Route path='/login' element={<Auth defaultMode="login" />}/>
       <Route path='/register' element={<Auth defaultMode="register" />}/>
+      <Route path='/forgot-password' element={<ForgotPassword/>}/>
+      <Route path='/reset-password/:token' element={<ResetPassword/>}/>
       <Route path='/interview' element={<ProtectedRoute><InterviewPage/></ProtectedRoute>}/>
       <Route path='/history' element={<InterviewHistory/>}/>
       <Route path='/about' element={<AboutUs/>}/>
       <Route path='/contact' element={<ContactUs/>}/>
       <Route path='/pricing' element={<Pricing/>}/>
+      <Route path='/blog' element={<Blog/>}/>
+      <Route path='/blog/:slug' element={<BlogDetail/>}/>
       <Route path='/report/:id' element={<InterviewReport/>}/>
       <Route path='/admin' element={<AdminRoute><AdminDashboard/></AdminRoute>}/>
+      <Route path='/admin/blogs' element={<AdminRoute><AdminBlogs/></AdminRoute>}/>
 
 
 
