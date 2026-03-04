@@ -141,6 +141,12 @@ function Navbar() {
               <div className="absolute right-0 mt-3 w-52 bg-white shadow-xl border border-slate-200 rounded-xl p-4 z-50">
                 <p className="text-sm text-[#0B3C6D] font-medium mb-2 truncate">{userData?.name}</p>
                 <button
+                  onClick={() => navigate("/interview")}
+                  className="w-full text-left text-sm py-2 hover:text-black text-slate-600"
+                >
+                  Attend Interview
+                </button>
+                <button
                   onClick={() => navigate("/history")}
                   className="w-full text-left text-sm py-2 hover:text-black text-slate-600"
                 >

@@ -31,7 +31,11 @@ function Auth({ defaultMode = "login" }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.from || "/interview";
+  const requestedPath = location.state?.from;
+  const redirectTo =
+    requestedPath && requestedPath !== "/" && requestedPath !== "/login" && requestedPath !== "/register"
+      ? requestedPath
+      : "/interview";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -297,8 +301,14 @@ function Auth({ defaultMode = "login" }) {
                 </div>
 
                 <p className="text-center text-xs text-slate-400 mt-10 px-8">
-                  By signing up, you agree to our <button type="button" className="underline">Terms of Service</button> and{" "}
-                  <button type="button" className="underline">Privacy Policy</button>.
+                  By signing up, you agree to our{" "}
+                  <Link to="/terms-of-service" className="underline hover:text-slate-600">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link to="/privacy-policy" className="underline hover:text-slate-600">
+                    Privacy Policy
+                  </Link>.
                 </p>
                 <p className="text-center text-sm text-slate-600 mt-5">
                   Already have an account?{" "}
@@ -306,10 +316,20 @@ function Auth({ defaultMode = "login" }) {
                     Login
                   </Link>
                 </p>
+                <div className="mt-4 flex items-center justify-center gap-4 text-xs text-slate-500">
+                  <Link to="/privacy-policy" className="hover:text-slate-700 underline">
+                    Privacy Policy
+                  </Link>
+                  <span>|</span>
+                  <Link to="/terms-of-service" className="hover:text-slate-700 underline">
+                    Terms of Service
+                  </Link>
+                </div>
               </motion.div>
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
@@ -460,9 +480,9 @@ function Auth({ defaultMode = "login" }) {
           </div>
 
           <div className="mt-10 flex gap-6 text-xs text-slate-400 font-medium">
-            <button type="button" className="hover:text-slate-600 transition-colors">Privacy Policy</button>
-            <button type="button" className="hover:text-slate-600 transition-colors">Terms of Service</button>
-            <button type="button" className="hover:text-slate-600 transition-colors">Help Center</button>
+            <Link to="/privacy-policy" className="hover:text-slate-600 transition-colors">Privacy Policy</Link>
+            <Link to="/terms-of-service" className="hover:text-slate-600 transition-colors">Terms of Service</Link>
+            <Link to="/contact" className="hover:text-slate-600 transition-colors">Help Center</Link>
           </div>
         </div>
       </div>

@@ -18,6 +18,9 @@ import BlogDetail from './pages/BlogDetail'
 import AdminBlogs from './pages/AdminBlogs'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsOfService from './pages/TermsOfService'
+import RefundCancellationPolicy from './pages/RefundCancellationPolicy'
 
 export const ServerUrl =
   import.meta.env.VITE_API_URL ||
@@ -112,6 +115,9 @@ function App() {
       <Route path='/history' element={<InterviewHistory/>}/>
       <Route path='/about' element={<AboutUs/>}/>
       <Route path='/contact' element={<ContactUs/>}/>
+      <Route path='/privacy-policy' element={<PrivacyPolicy/>}/>
+      <Route path='/terms-of-service' element={<TermsOfService/>}/>
+      <Route path='/refund-cancellation-policy' element={<RefundCancellationPolicy/>}/>
       <Route path='/pricing' element={<Pricing/>}/>
       <Route path='/blog' element={<Blog/>}/>
       <Route path='/blog/:slug' element={<BlogDetail/>}/>

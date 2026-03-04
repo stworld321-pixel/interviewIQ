@@ -11,12 +11,11 @@ import {
   BsGrid,
   BsMic,
   BsPersonBadge,
-  BsShare,
   BsTerminal,
 } from "react-icons/bs";
-import logo from "../assets/logo.png";
 import heroImage from "../assets/MM.png";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 function Home() {
   const { userData } = useSelector((state) => state.user);
@@ -245,43 +244,7 @@ function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-            <div className="lg:col-span-2">
-              <div className="flex items-center gap-2 mb-6">
-                <img src={logo} alt="Brand logo" className="w-40 h-14 object-contain" />
-              </div>
-              <p className="text-sm text-slate-500 max-w-xs leading-relaxed">
-                AI interview simulation platform built to bridge the gap between preparation and professional success.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-bold text-sm mb-6 uppercase tracking-widest text-slate-400">Platform</h5>
-              <ul className="space-y-4">
-                <li><a className="text-sm hover:text-[#1E88E5] transition-colors" href="#how-it-works">How It Works</a></li>
-                <li><a className="text-sm hover:text-[#1E88E5] transition-colors" href="#features">Interview Modes</a></li>
-                <li><a className="text-sm hover:text-[#1E88E5] transition-colors" href="#pricing">Pricing Plans</a></li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold text-sm mb-6 uppercase tracking-widest text-slate-400">Company</h5>
-              <ul className="space-y-4">
-                <li><button onClick={() => navigate("/about")} className="text-sm hover:text-[#1E88E5] transition-colors">About Us</button></li>
-                <li><button onClick={() => navigate("/contact")} className="text-sm hover:text-[#1E88E5] transition-colors">Contact</button></li>
-                <li><button onClick={() => navigate("/pricing")} className="text-sm hover:text-[#1E88E5] transition-colors">Plans</button></li>
-              </ul>
-            </div>
-          </div>
-          <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-xs text-slate-500">© 2026 Hireloop. All rights reserved.</p>
-            <div className="flex gap-6">
-              <button className="text-slate-400 hover:text-[#1E88E5] transition-colors"><BsGrid size={18} /></button>
-              <button className="text-slate-400 hover:text-[#1E88E5] transition-colors"><BsShare size={18} /></button>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
     </div>
   );

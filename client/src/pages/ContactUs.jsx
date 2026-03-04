@@ -45,23 +45,30 @@ function ContactUs() {
                 <BsEnvelope className="mt-1 text-[#1E88E5]" />
                 <div>
                   <p className="text-sm text-slate-400">Email</p>
-                  <p>support@hireloop.ai</p>
+                  <p>support@localjobshub.in</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <BsTelephone className="mt-1 text-[#1E88E5]" />
                 <div>
                   <p className="text-sm text-slate-400">Phone</p>
-                  <p>+91 98765 43210</p>
+                  <p>+91 90879 62062</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <BsGeoAlt className="mt-1 text-[#1E88E5]" />
                 <div>
                   <p className="text-sm text-slate-400">Location</p>
-                  <p>Chennai, India</p>
+                  <p>3,2nd aruthura nagar, puducherry - 9</p>
                 </div>
               </div>
+            </div>
+
+            <div className="mt-8 rounded-xl border border-white/20 bg-white/10 p-4">
+              <p className="text-sm text-slate-300">Business Name</p>
+              <p className="font-semibold">Hireloop (LocalJobsHub)</p>
+              <p className="text-sm text-slate-300 mt-3">GSTIN</p>
+              <p className="font-semibold">To be updated</p>
             </div>
           </div>
 
