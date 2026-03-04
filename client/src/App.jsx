@@ -21,7 +21,7 @@ import ResetPassword from './pages/ResetPassword'
 
 export const ServerUrl =
   import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:8000" : "https://interviewiq-1-server.onrender.com")
+  (import.meta.env.DEV ? "http://localhost:8000" : window.location.origin)
 
 function ProtectedRoute({ children }) {
   const { userData, authChecked } = useSelector((state) => state.user)

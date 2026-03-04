@@ -91,11 +91,16 @@ function Pricing() {
       if (!window.Razorpay) {
         throw new Error("Razorpay SDK failed to load. Please refresh and try again.");
       }
+      const token = localStorage.getItem("token");
+      const requestConfig = {
+        withCredentials: true,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      };
 
       const orderRes = await axios.post(
         ServerUrl + "/api/payment/order",
         { planId: plan.id },
-        { withCredentials: true }
+        requestConfig
       );
 
       const options = {
@@ -111,9 +116,10 @@ function Pricing() {
             const verifyRes = await axios.post(
               ServerUrl + "/api/payment/verify",
               response,
-              { withCredentials: true }
+              requestConfig
             );
             dispatch(setUserData(verifyRes.data.user));
+            localStorage.setItem("userData", JSON.stringify(verifyRes.data.user));
             alert(`${plan.name} activated. Credits added successfully.`);
             navigate("/history");
           } catch (verifyError) {
@@ -132,6 +138,11 @@ function Pricing() {
       });
       rzp.open();
     } catch (e) {
+      if (e?.response?.status === 401) {
+        setError("Session expired. Please login again to continue payment.");
+        navigate("/login", { state: { from: "/pricing" } });
+        return;
+      }
       setError(e?.response?.data?.message || e?.message || "Oops, something went wrong. Payment failed.");
     } finally {
       setLoadingPlan(null);
