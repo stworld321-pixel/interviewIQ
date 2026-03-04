@@ -1,37 +1,43 @@
 import nodemailer from "nodemailer";
 
-const smtpHost = process.env.SMTP_HOST || process.env.MAIL_HOST;
-const smtpPort = process.env.SMTP_PORT || process.env.MAIL_PORT;
-const smtpUser = process.env.SMTP_USER || process.env.MAIL_USERNAME;
-const smtpPass = process.env.SMTP_PASS || process.env.MAIL_PASSWORD;
-const smtpSecure = process.env.SMTP_SECURE || process.env.MAIL_SECURE || "false";
-const smtpFrom = process.env.SMTP_FROM || process.env.MAIL_FROM || smtpUser;
+const getSmtpConfig = () => {
+  const host = process.env.SMTP_HOST || process.env.MAIL_HOST;
+  const port = process.env.SMTP_PORT || process.env.MAIL_PORT;
+  const user = process.env.SMTP_USER || process.env.MAIL_USERNAME;
+  const pass = process.env.SMTP_PASS || process.env.MAIL_PASSWORD;
+  const secure = process.env.SMTP_SECURE || process.env.MAIL_SECURE || "false";
+  const from = process.env.SMTP_FROM || process.env.MAIL_FROM || user;
+
+  return { host, port, user, pass, secure, from };
+};
 
 const hasSmtpConfig = () =>
-  !!smtpHost &&
-  !!smtpPort &&
-  !!smtpUser &&
-  !!smtpPass;
+  !!getSmtpConfig().host &&
+  !!getSmtpConfig().port &&
+  !!getSmtpConfig().user &&
+  !!getSmtpConfig().pass;
 
 const getTransporter = () => {
   if (!hasSmtpConfig()) {
     throw new Error("SMTP is not configured");
   }
 
+  const smtp = getSmtpConfig();
+
   return nodemailer.createTransport({
-    host: smtpHost,
-    port: Number(smtpPort),
-    secure: String(smtpSecure) === "true",
+    host: smtp.host,
+    port: Number(smtp.port),
+    secure: String(smtp.secure) === "true",
     auth: {
-      user: smtpUser,
-      pass: smtpPass,
+      user: smtp.user,
+      pass: smtp.pass,
     },
   });
 };
 
 export const sendPasswordResetEmail = async ({ to, name, resetUrl }) => {
   const transporter = getTransporter();
-  const from = smtpFrom;
+  const { from } = getSmtpConfig();
 
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #111827;">
