@@ -11,6 +11,7 @@ import interviewRouter from "./routes/interview.route.js"
 import paymentRouter from "./routes/payment.route.js"
 import adminRouter from "./routes/admin.route.js"
 import blogRouter from "./routes/blog.route.js"
+import ttsRouter from "./routes/tts.route.js"
 
 const localOrigins = ["http://localhost:5173", "http://localhost:5174"];
 const deployedOrigins = (process.env.CLIENT_URL || "")
@@ -63,6 +64,7 @@ app.use("/api/interview" , interviewRouter)
 app.use("/api/payment" , paymentRouter)
 app.use("/api/admin" , adminRouter)
 app.use("/api/blogs", blogRouter)
+app.use("/api/tts", ttsRouter)
 
 const PORT = process.env.PORT || 6000
 const startServer = async () => {

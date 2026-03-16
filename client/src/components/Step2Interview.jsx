@@ -9,7 +9,14 @@ import { useRef } from 'react'
 import { useEffect } from 'react'
 import axios from "axios"
 import { ServerUrl } from '../App'
-import { BsArrowRight } from 'react-icons/bs'
+import { BsArrowRight, BsVolumeUp } from 'react-icons/bs'
+
+const murfVoiceOptions = [
+  { provider: "murf", id: "en-US-natalie", label: "Murf Natalie (Warm Female)", gender: "female", style: "Conversational" },
+  { provider: "murf", id: "en-US-miles", label: "Murf Miles (Calm Male)", gender: "male", style: "Conversational" },
+  { provider: "murf", id: "en-US-aria", label: "Murf Aria (Professional Female)", gender: "female", style: "Narration" },
+  { provider: "murf", id: "en-US-jackson", label: "Murf Jackson (Assertive Male)", gender: "male", style: "Narration" },
+];
 
 function Step2Interview({ interviewData, onFinish }) {
   const { interviewId, questions, userName } = interviewData;
@@ -25,7 +32,8 @@ function Step2Interview({ interviewData, onFinish }) {
   const [timeLeft, setTimeLeft] = useState(
     questions[0]?.timeLimit || 60
   );
-  const [selectedVoice, setSelectedVoice] = useState(null);
+  const [availableVoices, setAvailableVoices] = useState([]);
+  const [selectedVoiceId, setSelectedVoiceId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [voiceGender, setVoiceGender] = useState("female");
   const [subtitle, setSubtitle] = useState("");
@@ -33,108 +41,138 @@ function Step2Interview({ interviewData, onFinish }) {
 
 
   const videoRef = useRef(null);
+  const murfAudioRef = useRef(null);
+  const isSpeakingRef = useRef(false);
+  const lastSpokenKeyRef = useRef("");
 
   const currentQuestion = questions[currentIndex];
+  const selectedVoice = availableVoices.find((voice) => voice.key === selectedVoiceId) || null;
 
 
   useEffect(() => {
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
-      if (!voices.length) return;
+      const browserVoices = voices.map((voice, index) => {
+        const lowerName = voice.name.toLowerCase();
+        const gender = lowerName.includes("david") || lowerName.includes("male") ? "male" : "female";
+        return {
+          provider: "browser",
+          key: `browser-${index}`,
+          id: voice.name,
+          label: `${voice.name} (Browser)`,
+          gender,
+          voiceObj: voice,
+        };
+      });
+      const murfVoices = murfVoiceOptions.map((voice) => ({
+        ...voice,
+        key: `murf-${voice.id}`,
+      }));
+      const mergedVoices = [...murfVoices, ...browserVoices];
+      setAvailableVoices(mergedVoices);
 
-      // Try known female voices first
-      const femaleVoice =
-        voices.find(v =>
-          v.name.toLowerCase().includes("zira") ||
-          v.name.toLowerCase().includes("samantha") ||
-          v.name.toLowerCase().includes("female")
-        );
-
-      if (femaleVoice) {
-        setSelectedVoice(femaleVoice);
-        setVoiceGender("female");
-        return;
-      }
-
-      // Try known male voices
-      const maleVoice =
-        voices.find(v =>
-          v.name.toLowerCase().includes("david") ||
-          v.name.toLowerCase().includes("mark") ||
-          v.name.toLowerCase().includes("male")
-        );
-
-      if (maleVoice) {
-        setSelectedVoice(maleVoice);
-        setVoiceGender("male");
-        return;
-      }
-
-      // Fallback: first voice (assume female)
-      setSelectedVoice(voices[0]);
-      setVoiceGender("female");
+      setSelectedVoiceId((prev) => prev || mergedVoices[0]?.key || "");
     };
 
     loadVoices();
     window.speechSynthesis.onvoiceschanged = loadVoices;
-
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
   }, [])
+
+  useEffect(() => {
+    if (selectedVoice?.gender) {
+      setVoiceGender(selectedVoice.gender);
+    }
+  }, [selectedVoice]);
 
   const videoSource = voiceGender === "male" ? maleVideo : femaleVideo;
 
 
   /* ---------------- SPEAK FUNCTION ---------------- */
-  const speakText = (text) => {
-    return new Promise((resolve) => {
-      if (!window.speechSynthesis || !selectedVoice) {
+  const playMurfAudio = async (text, voiceConfig) => {
+    const token = localStorage.getItem("token");
+    const result = await axios.post(
+      ServerUrl + "/api/tts/speak",
+      {
+        text,
+        voiceId: voiceConfig.id,
+        style: voiceConfig.style || "Conversational",
+      },
+      {
+        withCredentials: true,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        timeout: 35000,
+      }
+    );
+
+    const audioUrl = result?.data?.audioUrl;
+    const audioBase64 = result?.data?.audioBase64;
+    const src = audioUrl || (audioBase64 ? `data:audio/mpeg;base64,${audioBase64}` : null);
+    if (!src) throw new Error("No playable audio from Murf");
+
+    return new Promise((resolve, reject) => {
+      const audio = new Audio(src);
+      murfAudioRef.current = audio;
+      audio.onended = () => resolve();
+      audio.onerror = () => reject(new Error("Audio playback failed"));
+      audio.play().catch(reject);
+    });
+  };
+
+  const speakWithBrowser = (text, browserVoice) =>
+    new Promise((resolve) => {
+      if (!window.speechSynthesis || !browserVoice?.voiceObj) {
         resolve();
         return;
       }
-
       window.speechSynthesis.cancel();
-
-      // Add natural pauses after commas and periods
-      const humanText = text
-        .replace(/,/g, ", ... ")
-        .replace(/\./g, ". ... ");
-
+      const humanText = text.replace(/,/g, ", ... ").replace(/\./g, ". ... ");
       const utterance = new SpeechSynthesisUtterance(humanText);
-
-      utterance.voice = selectedVoice;
-
-      // Human-like pacing
-      utterance.rate = 0.92;     // slightly slower than normal
-      utterance.pitch = 1.05;    // small warmth
+      utterance.voice = browserVoice.voiceObj;
+      utterance.rate = 0.92;
+      utterance.pitch = 1.05;
       utterance.volume = 1;
-
-      utterance.onstart = () => {
-        setIsAIPlaying(true);
-        stopMic()
-        videoRef.current?.play();
-      };
-
-
-      utterance.onend = () => {
-        videoRef.current?.pause();
-        videoRef.current.currentTime = 0;
-        setIsAIPlaying(false);
-
-
-
-        if (isMicOn) {
-          startMic();
-        }
-        setTimeout(() => {
-          setSubtitle("");
-          resolve();
-        }, 300);
-      };
-
-
-      setSubtitle(text);
-
+      utterance.onend = () => resolve();
       window.speechSynthesis.speak(utterance);
     });
+
+  const speakText = async (text) => {
+    if (isSpeakingRef.current) return;
+    if (!selectedVoice) return;
+    isSpeakingRef.current = true;
+    if (murfAudioRef.current) {
+      murfAudioRef.current.pause();
+      murfAudioRef.current = null;
+    }
+    window.speechSynthesis.cancel();
+    setIsAIPlaying(true);
+    stopMic();
+    setSubtitle(text);
+    videoRef.current?.play();
+
+    try {
+      if (selectedVoice.provider === "murf") {
+        await playMurfAudio(text, selectedVoice);
+      } else {
+        await speakWithBrowser(text, selectedVoice);
+      }
+    } catch (error) {
+      const fallbackVoice = availableVoices.find((voice) => voice.provider === "browser");
+      if (fallbackVoice) {
+        await speakWithBrowser(text, fallbackVoice);
+      } else {
+        console.log(error);
+      }
+    } finally {
+      videoRef.current?.pause();
+      if (videoRef.current) videoRef.current.currentTime = 0;
+      setIsAIPlaying(false);
+      setSubtitle("");
+      isSpeakingRef.current = false;
+      if (isMicOn) startMic();
+    }
   };
 
 
@@ -144,6 +182,10 @@ function Step2Interview({ interviewData, onFinish }) {
     }
     const runIntro = async () => {
       if (isIntroPhase) {
+        const introKey = `intro-${selectedVoiceId}`;
+        if (lastSpokenKeyRef.current === introKey) return;
+        lastSpokenKeyRef.current = introKey;
+
         await speakText(
           `Hi ${userName}, it's great to meet you today. I hope you're feeling confident and ready.`
         );
@@ -154,6 +196,10 @@ function Step2Interview({ interviewData, onFinish }) {
 
         setIsIntroPhase(false)
       } else if (currentQuestion) {
+        const questionKey = `question-${currentIndex}-${selectedVoiceId}`;
+        if (lastSpokenKeyRef.current === questionKey) return;
+        lastSpokenKeyRef.current = questionKey;
+
         await new Promise(r => setTimeout(r, 800));
 
         // If last question (hard level)
@@ -162,18 +208,12 @@ function Step2Interview({ interviewData, onFinish }) {
         }
 
         await speakText(currentQuestion.question);
-
-        if (isMicOn) {
-          startMic();
-        }
       }
 
     }
 
     runIntro()
-
-
-  }, [selectedVoice, isIntroPhase, currentIndex])
+  }, [selectedVoiceId, isIntroPhase, currentIndex, currentQuestion, userName])
 
 
 
@@ -329,6 +369,10 @@ function Step2Interview({ interviewData, onFinish }) {
       }
 
       window.speechSynthesis.cancel();
+      if (murfAudioRef.current) {
+        murfAudioRef.current.pause();
+        murfAudioRef.current = null;
+      }
     };
   }, []);
 
@@ -344,6 +388,32 @@ function Step2Interview({ interviewData, onFinish }) {
 
         {/* video section */}
         <div className='w-full lg:w-[35%] bg-white flex flex-col items-center p-6 space-y-6 border-r border-gray-200'>
+          <div className='w-full max-w-md rounded-2xl border border-[#d7e7fc] bg-gradient-to-r from-[#eef5ff] to-white p-4 shadow-sm'>
+            <div className='flex items-center justify-between mb-3'>
+              <label className='text-xs font-bold text-[#0B3C6D] uppercase tracking-wider flex items-center gap-2'>
+                <BsVolumeUp className='text-[#1E88E5]' />
+                Voice Design
+              </label>
+              <span className='text-[10px] px-2 py-1 rounded-full bg-[#0B3C6D] text-white uppercase tracking-wider'>
+                {selectedVoice?.provider === "murf" ? "Murf Realistic" : "Browser"}
+              </span>
+            </div>
+            <select
+              value={selectedVoiceId}
+              onChange={(e) => setSelectedVoiceId(e.target.value)}
+              className='w-full bg-white border border-[#bdd6f7] rounded-xl px-3 py-2.5 text-sm font-medium text-gray-700 outline-none focus:ring-2 focus:ring-[#1E88E5]/40'
+            >
+              {availableVoices.map((voice) => (
+                <option key={voice.key} value={voice.key}>
+                  {voice.label}
+                </option>
+              ))}
+            </select>
+            <p className='mt-2 text-xs text-[#52749c]'>
+              Select a voice before interview starts. Murf gives emotional realistic output.
+            </p>
+          </div>
+
           <div className='w-full max-w-md rounded-2xl overflow-hidden shadow-xl'>
             <video
               src={videoSource}
