@@ -21,7 +21,11 @@ function AdminBlogs() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [editorMode, setEditorMode] = useState("visual");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkText, setLinkText] = useState("");
   const contentRef = useRef(null);
+  const richEditorRef = useRef(null);
 
   const loadBlogs = async () => {
     try {
@@ -40,8 +44,34 @@ function AdminBlogs() {
     loadBlogs();
   }, []);
 
+  useEffect(() => {
+    if (!richEditorRef.current) return;
+    if (editorMode !== "visual") return;
+    if (richEditorRef.current.innerHTML !== form.content) {
+      richEditorRef.current.innerHTML = form.content || "<p></p>";
+    }
+  }, [form.content, editorMode]);
+
   const updateForm = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const sanitizePreviewHtml = (html = "") => {
+    if (typeof window === "undefined") return html;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    doc.querySelectorAll("script,iframe,object,embed").forEach((el) => el.remove());
+    doc.querySelectorAll("*").forEach((el) => {
+      Array.from(el.attributes).forEach((attr) => {
+        const name = attr.name.toLowerCase();
+        const value = (attr.value || "").toLowerCase().trim();
+        if (name.startsWith("on")) el.removeAttribute(attr.name);
+        if ((name === "href" || name === "src") && value.startsWith("javascript:")) {
+          el.removeAttribute(attr.name);
+        }
+      });
+    });
+    return doc.body.innerHTML;
   };
 
   const applyWrap = (prefix, suffix = prefix) => {
@@ -53,16 +83,69 @@ function AdminBlogs() {
     const selected = form.content.slice(start, end);
     const inserted = `${prefix}${selected || "text"}${suffix}`;
 
-    const nextContent =
-      form.content.slice(0, start) + inserted + form.content.slice(end);
+    const nextContent = form.content.slice(0, start) + inserted + form.content.slice(end);
 
     setForm((prev) => ({ ...prev, content: nextContent }));
+  };
+
+  const insertAtCursor = (snippet) => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const nextContent = form.content.slice(0, start) + snippet + form.content.slice(end);
+    setForm((prev) => ({ ...prev, content: nextContent }));
+  };
+
+  const getSafeLink = () => {
+    const url = linkUrl.trim();
+    if (!url) return "";
+    return url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
+  };
+
+  const insertLink = () => {
+    const safeUrl = getSafeLink();
+    if (!safeUrl) return;
+    const text = linkText.trim() || "Read more";
+    insertAtCursor(`<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${text}</a>`);
+  };
+
+  const syncFromVisualEditor = () => {
+    const editor = richEditorRef.current;
+    if (!editor) return;
+    updateForm("content", editor.innerHTML);
+  };
+
+  const execVisual = (command, value = null) => {
+    richEditorRef.current?.focus();
+    document.execCommand(command, false, value);
+    syncFromVisualEditor();
+  };
+
+  const setBlock = (tag) => execVisual("formatBlock", tag);
+
+  const insertVisualLink = () => {
+    const safeUrl = getSafeLink();
+    if (!safeUrl) return;
+    const text = linkText.trim() || "Read more";
+    richEditorRef.current?.focus();
+    document.execCommand(
+      "insertHTML",
+      false,
+      `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${text}</a>`
+    );
+    syncFromVisualEditor();
   };
 
   const resetForm = () => {
     setForm(defaultForm);
     setImageFile(null);
     setEditingId(null);
+    setEditorMode("visual");
+    if (richEditorRef.current) {
+      richEditorRef.current.innerHTML = "<p></p>";
+    }
   };
 
   const startEdit = (blog) => {
@@ -77,6 +160,7 @@ function AdminBlogs() {
       isPublished: !!blog.isPublished,
     });
     setImageFile(null);
+    setEditorMode("visual");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -187,51 +271,213 @@ function AdminBlogs() {
 
             <div className="rounded-xl border border-slate-200 p-3">
               <p className="text-sm font-medium text-slate-700 mb-2">Content Editor</p>
-              <div className="flex flex-wrap gap-2 mb-3">
+
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div className="inline-flex rounded-lg border border-slate-300 p-1 bg-slate-50">
+                  <button
+                    type="button"
+                    onClick={() => setEditorMode("visual")}
+                    className={`px-3 py-1.5 text-xs rounded-md ${
+                      editorMode === "visual" ? "bg-white text-[#0B3C6D] shadow-sm" : "text-slate-600"
+                    }`}
+                  >
+                    Visual
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditorMode("html")}
+                    className={`px-3 py-1.5 text-xs rounded-md ${
+                      editorMode === "html" ? "bg-white text-[#0B3C6D] shadow-sm" : "text-slate-600"
+                    }`}
+                  >
+                    HTML
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-[1fr_1fr_auto] gap-2 mb-3">
+                <input
+                  type="text"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder="Link URL (https://...)"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1E88E5]/30"
+                />
+                <input
+                  type="text"
+                  value={linkText}
+                  onChange={(e) => setLinkText(e.target.value)}
+                  placeholder="Anchor text (e.g. Read more)"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#1E88E5]/30"
+                />
                 <button
                   type="button"
-                  onClick={() => applyWrap("<strong>", "</strong>")}
-                  className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                  onClick={editorMode === "visual" ? insertVisualLink : insertLink}
+                  className="px-4 py-2 text-sm rounded-lg border border-slate-300 hover:bg-slate-100"
                 >
-                  Bold
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyWrap("<em>", "</em>")}
-                  className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
-                >
-                  Italic
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyWrap("<h2>", "</h2>")}
-                  className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
-                >
-                  H2
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyWrap('<a href="https://">', "</a>")}
-                  className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
-                >
-                  Link
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyWrap("<ul><li>", "</li></ul>")}
-                  className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
-                >
-                  List
+                  Insert Link
                 </button>
               </div>
-              <textarea
-                ref={contentRef}
-                value={form.content}
-                onChange={(e) => updateForm("content", e.target.value)}
-                placeholder="Write blog HTML content here..."
-                rows={12}
-                required
-                className="w-full border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#1E88E5]/30 resize-y"
+
+              {editorMode === "visual" && (
+                <>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <button
+                      type="button"
+                      onClick={() => execVisual("bold")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      Bold
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => execVisual("italic")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      Italic
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBlock("h2")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      H2
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBlock("h3")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      H3
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBlock("p")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      Paragraph
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => execVisual("insertUnorderedList")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      List
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => execVisual("formatBlock", "blockquote")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      Quote
+                    </button>
+                    <button
+                      type="button"
+                      onClick={insertVisualLink}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      Link
+                    </button>
+                  </div>
+                  <div
+                    ref={richEditorRef}
+                    contentEditable
+                    onInput={syncFromVisualEditor}
+                    className="min-h-[280px] w-full border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#1E88E5]/30 bg-white text-slate-800 overflow-y-auto"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  />
+                </>
+              )}
+
+              {editorMode === "html" && (
+                <>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <button
+                      type="button"
+                      onClick={() => applyWrap("<strong>", "</strong>")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      Bold
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyWrap("<em>", "</em>")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      Italic
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyWrap("<h2>", "</h2>")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      H2
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyWrap("<h3>", "</h3>")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      H3
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyWrap("<p>", "</p>")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      Paragraph
+                    </button>
+                    <button
+                      type="button"
+                      onClick={insertLink}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      Link
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyWrap("<ul><li>", "</li></ul>")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      List
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyWrap("<blockquote>", "</blockquote>")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      Quote
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => applyWrap("<pre><code>", "</code></pre>")}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-slate-300 hover:bg-slate-100"
+                    >
+                      Code
+                    </button>
+                  </div>
+                  <textarea
+                    ref={contentRef}
+                    value={form.content}
+                    onChange={(e) => updateForm("content", e.target.value)}
+                    placeholder="Write blog HTML content here..."
+                    rows={12}
+                    required
+                    className="w-full border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#1E88E5]/30 resize-y"
+                  />
+                </>
+              )}
+
+              <p className="text-xs text-slate-500 mt-3">
+                Use h2 and h3 headings to auto-generate table of contents in single post page.
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 p-3 bg-white">
+              <h3 className="text-sm font-medium text-slate-700 mb-2">Live Preview</h3>
+              <div
+                className="prose max-w-none prose-headings:text-[#0B3C6D] prose-a:text-[#1E88E5] min-h-[180px]"
+                dangerouslySetInnerHTML={{ __html: sanitizePreviewHtml(form.content || "<p>Preview appears here...</p>") }}
               />
             </div>
 
@@ -288,7 +534,7 @@ function AdminBlogs() {
                     </p>
                     <h3 className="font-semibold text-[#0B3C6D]">{blog.title}</h3>
                     <p className="text-xs text-slate-500 mt-1">
-                      {blog.isPublished ? "Published" : "Unpublished"} |{" "}
+                      {blog.isPublished ? "Published" : "Unpublished"} | {" "}
                       {new Date(blog.createdAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -317,4 +563,3 @@ function AdminBlogs() {
 }
 
 export default AdminBlogs;
-
