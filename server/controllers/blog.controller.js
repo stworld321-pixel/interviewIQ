@@ -1,4 +1,6 @@
 import Blog from "../models/blog.model.js";
+import fs from "fs/promises";
+import { uploadFileToMinio, isMinioEnabled } from "../config/minio.js";
 
 const normalizeTags = (tagsInput) => {
   if (Array.isArray(tagsInput)) {
@@ -39,6 +41,30 @@ const generateUniqueSlug = async (title, excludeId = null) => {
     }
     slug = `${baseSlug}-${count++}`;
   }
+};
+
+const uploadBlogImage = async (file, slug) => {
+  if (!file) return "";
+
+  if (!isMinioEnabled()) {
+    return `/uploads/${file.filename}`;
+  }
+
+  const safeSlug = slug || "blog";
+  const objectName = `blogs/${safeSlug}/${Date.now()}-${file.filename}`;
+  const imageUrl = await uploadFileToMinio({
+    filePath: file.path,
+    objectName,
+    contentType: file.mimetype,
+  });
+
+  try {
+    await fs.unlink(file.path);
+  } catch {
+    // best-effort cleanup after successful MinIO upload
+  }
+
+  return imageUrl;
 };
 
 export const getPublishedBlogs = async (req, res) => {
@@ -101,7 +127,7 @@ export const createBlog = async (req, res) => {
     }
 
     const slug = await generateUniqueSlug(title);
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : "";
+    const imageUrl = req.file ? await uploadBlogImage(req.file, slug) : "";
 
     const blog = await Blog.create({
       title: title.trim(),
@@ -155,7 +181,7 @@ export const updateBlog = async (req, res) => {
       blog.isPublished = String(isPublished) === "true" || isPublished === true;
     }
     if (req.file) {
-      blog.imageUrl = `/uploads/${req.file.filename}`;
+      blog.imageUrl = await uploadBlogImage(req.file, blog.slug);
     }
 
     await blog.save();
@@ -179,4 +205,3 @@ export const deleteBlog = async (req, res) => {
     return res.status(500).json({ message: `Failed to delete blog ${error}` });
   }
 };
-
