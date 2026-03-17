@@ -84,13 +84,10 @@ function Pricing() {
         return;
       }
 
-      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
-      if (!razorpayKey || razorpayKey.includes("add your")) {
-        throw new Error("Razorpay key is missing in frontend env (VITE_RAZORPAY_KEY_ID).");
-      }
       if (!window.Razorpay) {
         throw new Error("Razorpay SDK failed to load. Please refresh and try again.");
       }
+      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
       const token = localStorage.getItem("token");
       const requestConfig = {
         withCredentials: true,
@@ -103,8 +100,13 @@ function Pricing() {
         requestConfig
       );
 
+      const checkoutKey = orderRes?.data?.keyId || razorpayKey;
+      if (!checkoutKey || checkoutKey.includes("add your")) {
+        throw new Error("Razorpay key is missing. Set server RAZORPAY_KEY_ID (preferred) or frontend VITE_RAZORPAY_KEY_ID.");
+      }
+
       const options = {
-        key: razorpayKey,
+        key: checkoutKey,
         amount: orderRes.data.amount,
         currency: "INR",
         name: "Hireloop",

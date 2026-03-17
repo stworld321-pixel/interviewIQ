@@ -39,7 +39,10 @@ export const createOrder = async (req, res) => {
       status: "created",
     });
 
-    return res.json(order);
+    return res.json({
+      ...order,
+      keyId: process.env.RAZORPAY_KEY_ID,
+    });
   } catch (error) {
     return res.status(500).json({ message: error?.error?.description || error?.message || "Failed to create Razorpay order" });
   }
