@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import { ServerUrl } from "../App";
@@ -27,6 +27,17 @@ function AdminBlogs() {
   const contentRef = useRef(null);
   const richEditorRef = useRef(null);
 
+  const toImageSrc = (imageUrl = "") => {
+    if (!imageUrl) return "";
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) return imageUrl;
+    return `${ServerUrl}${imageUrl}`;
+  };
+
+  const selectedImagePreview = useMemo(() => {
+    if (!imageFile) return "";
+    return URL.createObjectURL(imageFile);
+  }, [imageFile]);
+
   const loadBlogs = async () => {
     try {
       setLoading(true);
@@ -43,6 +54,14 @@ function AdminBlogs() {
   useEffect(() => {
     loadBlogs();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (selectedImagePreview) {
+        URL.revokeObjectURL(selectedImagePreview);
+      }
+    };
+  }, [selectedImagePreview]);
 
   useEffect(() => {
     if (!richEditorRef.current) return;
@@ -163,6 +182,8 @@ function AdminBlogs() {
     setEditorMode("visual");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const editingBlog = blogs.find((item) => item._id === editingId);
 
   const submitBlog = async (e) => {
     e.preventDefault();
@@ -498,6 +519,17 @@ function AdminBlogs() {
               </label>
             </div>
 
+            {(selectedImagePreview || editingBlog?.imageUrl) && (
+              <div className="border border-slate-200 rounded-xl p-3">
+                <p className="text-xs font-medium text-slate-600 mb-2">Image Preview</p>
+                <img
+                  src={selectedImagePreview || toImageSrc(editingBlog?.imageUrl)}
+                  alt="Blog preview"
+                  className="w-full max-w-md h-44 object-cover rounded-lg border border-slate-200"
+                />
+              </div>
+            )}
+
             <div className="flex items-center gap-3">
               <button
                 type="submit"
@@ -528,15 +560,26 @@ function AdminBlogs() {
                   key={blog._id}
                   className="border border-slate-200 rounded-xl p-4 flex items-start justify-between gap-3"
                 >
-                  <div>
-                    <p className="text-xs uppercase tracking-wider text-slate-500">
-                      {blog.category || "General"}
-                    </p>
-                    <h3 className="font-semibold text-[#0B3C6D]">{blog.title}</h3>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {blog.isPublished ? "Published" : "Unpublished"} | {" "}
-                      {new Date(blog.createdAt).toLocaleDateString()}
-                    </p>
+                  <div className="flex items-start gap-3">
+                    {blog.imageUrl ? (
+                      <img
+                        src={toImageSrc(blog.imageUrl)}
+                        alt={blog.title}
+                        className="w-20 h-16 object-cover rounded-md border border-slate-200"
+                      />
+                    ) : (
+                      <div className="w-20 h-16 rounded-md border border-dashed border-slate-300 bg-slate-50" />
+                    )}
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-slate-500">
+                        {blog.category || "General"}
+                      </p>
+                      <h3 className="font-semibold text-[#0B3C6D]">{blog.title}</h3>
+                      <p className="text-xs text-slate-500 mt-1">
+                        {blog.isPublished ? "Published" : "Unpublished"} | {" "}
+                        {new Date(blog.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
