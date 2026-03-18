@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import { ServerUrl } from "../App";
@@ -33,10 +33,7 @@ function AdminBlogs() {
     return `${ServerUrl}${imageUrl}`;
   };
 
-  const selectedImagePreview = useMemo(() => {
-    if (!imageFile) return "";
-    return URL.createObjectURL(imageFile);
-  }, [imageFile]);
+  const [selectedImagePreview, setSelectedImagePreview] = useState("");
 
   const loadBlogs = async () => {
     try {
@@ -56,12 +53,17 @@ function AdminBlogs() {
   }, []);
 
   useEffect(() => {
-    return () => {
-      if (selectedImagePreview) {
-        URL.revokeObjectURL(selectedImagePreview);
-      }
+    if (!imageFile) {
+      setSelectedImagePreview("");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImagePreview(typeof reader.result === "string" ? reader.result : "");
     };
-  }, [selectedImagePreview]);
+    reader.readAsDataURL(imageFile);
+  }, [imageFile]);
 
   useEffect(() => {
     if (!richEditorRef.current) return;
@@ -160,6 +162,7 @@ function AdminBlogs() {
   const resetForm = () => {
     setForm(defaultForm);
     setImageFile(null);
+    setSelectedImagePreview("");
     setEditingId(null);
     setEditorMode("visual");
     if (richEditorRef.current) {
