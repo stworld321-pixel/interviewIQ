@@ -148,7 +148,18 @@ function BlogDetail() {
               )}
 
               <div
-                className="mt-7 prose max-w-none prose-headings:text-[#0B3C6D] prose-a:text-[#1E88E5] prose-a:no-underline hover:prose-a:underline"
+                className="mt-7 max-w-none text-slate-700 leading-7
+                [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:text-[#0B3C6D] [&_h2]:mt-7 [&_h2]:mb-3
+                [&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:text-[#0B3C6D] [&_h3]:mt-6 [&_h3]:mb-2
+                [&_h4]:text-xl [&_h4]:font-semibold [&_h4]:text-[#0B3C6D] [&_h4]:mt-5 [&_h4]:mb-2
+                [&_p]:mb-3
+                [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-3
+                [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-3
+                [&_li]:mb-1
+                [&_blockquote]:border-l-4 [&_blockquote]:border-[#1E88E5] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-slate-600 [&_blockquote]:my-4
+                [&_a]:text-[#1E88E5] [&_a]:underline hover:[&_a]:text-[#0B3C6D]
+                [&_pre]:bg-slate-900 [&_pre]:text-slate-100 [&_pre]:p-4 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre]:my-4
+                [&_code]:bg-slate-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded"
                 dangerouslySetInnerHTML={{ __html: parsedContent.html }}
               />
 
