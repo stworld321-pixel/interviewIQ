@@ -21,6 +21,8 @@ import ResetPassword from './pages/ResetPassword'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService'
 import RefundCancellationPolicy from './pages/RefundCancellationPolicy'
+import SeoHub from './pages/SeoHub'
+import SeoPage from './pages/SeoPage'
 
 export const ServerUrl =
   import.meta.env.VITE_API_URL ||
@@ -121,6 +123,8 @@ function App() {
       <Route path='/pricing' element={<Pricing/>}/>
       <Route path='/blog' element={<Blog/>}/>
       <Route path='/blog/:slug' element={<BlogDetail/>}/>
+      <Route path='/resources/interview-questions' element={<SeoHub/>}/>
+      <Route path='/resources/interview-questions/:slug' element={<SeoPage/>}/>
       <Route path='/report/:id' element={<InterviewReport/>}/>
       <Route path='/admin' element={<AdminRoute><AdminDashboard/></AdminRoute>}/>
       <Route path='/admin/blogs' element={<AdminRoute><AdminBlogs/></AdminRoute>}/>
