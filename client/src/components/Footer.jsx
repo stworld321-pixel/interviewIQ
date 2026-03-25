@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { BsGrid, BsShare } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
@@ -43,7 +43,23 @@ function Footer() {
 
           <div className="mt-8 pt-6 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <p className="text-xs text-slate-500 text-center sm:text-left">© 2026 Hireloop. All rights reserved.</p>
-            <div className="flex justify-center sm:justify-end gap-4">
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-4">
+              <a
+                href="https://indieai.directory/"
+                target="_blank"
+                rel="noopener"
+                className="text-xs text-slate-600 hover:text-[#1E88E5] transition-colors underline"
+              >
+                Listed on IndieAI Directory
+              </a>
+              <a target="_blank" href="https://milliondothomepage.com" rel="noopener noreferrer">
+                <img
+                  src="https://milliondothomepage.com/assets/images/badge.png"
+                  alt="Million Dot Homepage"
+                  height="54"
+                  className="h-[54px] w-auto"
+                />
+              </a>
               <button className="h-9 w-9 rounded-full border border-slate-200 text-slate-500 hover:text-[#1E88E5] hover:border-[#1E88E5]/40 transition-colors flex items-center justify-center">
                 <BsGrid size={16} />
               </button>
