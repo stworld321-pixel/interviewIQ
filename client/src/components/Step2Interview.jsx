@@ -43,6 +43,8 @@ function Step2Interview({ interviewData, onFinish }) {
   const videoRef = useRef(null);
   const murfAudioRef = useRef(null);
   const isSpeakingRef = useRef(false);
+  const micActiveRef = useRef(false);
+  const speakRequestIdRef = useRef(0);
   const lastSpokenKeyRef = useRef("");
 
   const currentQuestion = questions[currentIndex];
@@ -116,6 +118,7 @@ function Step2Interview({ interviewData, onFinish }) {
       const audio = new Audio(src);
       murfAudioRef.current = audio;
       audio.onended = () => resolve();
+      audio.onpause = () => resolve();
       audio.onerror = () => reject(new Error("Audio playback failed"));
       audio.play().catch(reject);
     });
@@ -135,18 +138,34 @@ function Step2Interview({ interviewData, onFinish }) {
       utterance.pitch = 1.05;
       utterance.volume = 1;
       utterance.onend = () => resolve();
+      utterance.onerror = () => resolve();
       window.speechSynthesis.speak(utterance);
     });
 
-  const speakText = async (text) => {
-    if (isSpeakingRef.current) return;
-    if (!selectedVoice) return;
-    isSpeakingRef.current = true;
+  const stopCurrentSpeech = () => {
+    window.speechSynthesis.cancel();
     if (murfAudioRef.current) {
       murfAudioRef.current.pause();
       murfAudioRef.current = null;
     }
-    window.speechSynthesis.cancel();
+    setIsAIPlaying(false);
+    setSubtitle("");
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+    isSpeakingRef.current = false;
+  };
+
+  const speakText = async (text) => {
+    const requestId = speakRequestIdRef.current + 1;
+    speakRequestIdRef.current = requestId;
+    if (isSpeakingRef.current) {
+      stopCurrentSpeech();
+    }
+    if (!selectedVoice) return;
+
+    isSpeakingRef.current = true;
     setIsAIPlaying(true);
     stopMic();
     setSubtitle(text);
@@ -158,20 +177,21 @@ function Step2Interview({ interviewData, onFinish }) {
       } else {
         await speakWithBrowser(text, selectedVoice);
       }
+      return true;
     } catch (error) {
       const fallbackVoice = availableVoices.find((voice) => voice.provider === "browser");
       if (fallbackVoice) {
         await speakWithBrowser(text, fallbackVoice);
+        return true;
       } else {
         console.log(error);
       }
+      return false;
     } finally {
-      videoRef.current?.pause();
-      if (videoRef.current) videoRef.current.currentTime = 0;
-      setIsAIPlaying(false);
-      setSubtitle("");
-      isSpeakingRef.current = false;
-      if (isMicOn) startMic();
+      if (speakRequestIdRef.current === requestId) {
+        stopCurrentSpeech();
+        if (isMicOn) startMic();
+      }
     }
   };
 
@@ -184,21 +204,22 @@ function Step2Interview({ interviewData, onFinish }) {
       if (isIntroPhase) {
         const introKey = `intro-${selectedVoiceId}`;
         if (lastSpokenKeyRef.current === introKey) return;
-        lastSpokenKeyRef.current = introKey;
 
-        await speakText(
+        const intro1 = await speakText(
           `Hi ${userName}, it's great to meet you today. I hope you're feeling confident and ready.`
         );
 
-        await speakText(
+        const intro2 = await speakText(
           "I'll ask you a few questions. Just answer naturally, and take your time. Let's begin."
         );
 
-        setIsIntroPhase(false)
+        if (intro1 || intro2) {
+          lastSpokenKeyRef.current = introKey;
+          setIsIntroPhase(false);
+        }
       } else if (currentQuestion) {
         const questionKey = `question-${currentIndex}-${selectedVoiceId}`;
         if (lastSpokenKeyRef.current === questionKey) return;
-        lastSpokenKeyRef.current = questionKey;
 
         await new Promise(r => setTimeout(r, 800));
 
@@ -207,7 +228,10 @@ function Step2Interview({ interviewData, onFinish }) {
           await speakText("Alright, this one might be a bit more challenging.");
         }
 
-        await speakText(currentQuestion.question);
+        const questionSpoken = await speakText(currentQuestion.question);
+        if (questionSpoken) {
+          lastSpokenKeyRef.current = questionKey;
+        }
       }
 
     }
@@ -257,6 +281,15 @@ function Step2Interview({ interviewData, onFinish }) {
 
       setAnswer((prev) => prev + " " + transcript);
     };
+    recognition.onstart = () => {
+      micActiveRef.current = true;
+    };
+    recognition.onend = () => {
+      micActiveRef.current = false;
+    };
+    recognition.onerror = () => {
+      micActiveRef.current = false;
+    };
 
     recognitionRef.current = recognition;
 
@@ -264,7 +297,7 @@ function Step2Interview({ interviewData, onFinish }) {
 
 
   const startMic = () => {
-    if (recognitionRef.current && !isAIPlaying) {
+    if (recognitionRef.current && !isAIPlaying && !micActiveRef.current) {
       try {
         recognitionRef.current.start();
       } catch { }
@@ -272,7 +305,7 @@ function Step2Interview({ interviewData, onFinish }) {
   };
 
   const stopMic = () => {
-    if (recognitionRef.current) {
+    if (recognitionRef.current && micActiveRef.current) {
       recognitionRef.current.stop();
     }
   };
@@ -368,11 +401,7 @@ function Step2Interview({ interviewData, onFinish }) {
         recognitionRef.current.abort();
       }
 
-      window.speechSynthesis.cancel();
-      if (murfAudioRef.current) {
-        murfAudioRef.current.pause();
-        murfAudioRef.current = null;
-      }
+      stopCurrentSpeech();
     };
   }, []);
 
