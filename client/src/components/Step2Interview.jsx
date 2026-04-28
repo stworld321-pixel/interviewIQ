@@ -11,13 +11,6 @@ import axios from "axios"
 import { ServerUrl } from '../App'
 import { BsArrowRight, BsVolumeUp } from 'react-icons/bs'
 
-const murfVoiceOptions = [
-  { provider: "murf", id: "en-US-natalie", label: "Murf Natalie (Warm Female)", gender: "female", style: "Conversational" },
-  { provider: "murf", id: "en-US-miles", label: "Murf Miles (Calm Male)", gender: "male", style: "Conversational" },
-  { provider: "murf", id: "en-US-aria", label: "Murf Aria (Professional Female)", gender: "female", style: "Narration" },
-  { provider: "murf", id: "en-US-jackson", label: "Murf Jackson (Assertive Male)", gender: "male", style: "Narration" },
-];
-
 function Step2Interview({ interviewData, onFinish }) {
   const { interviewId, questions, userName } = interviewData;
   const [isIntroPhase, setIsIntroPhase] = useState(true);
@@ -41,7 +34,6 @@ function Step2Interview({ interviewData, onFinish }) {
 
 
   const videoRef = useRef(null);
-  const murfAudioRef = useRef(null);
   const isSpeakingRef = useRef(false);
   const micActiveRef = useRef(false);
   const speakRequestIdRef = useRef(0);
@@ -66,14 +58,8 @@ function Step2Interview({ interviewData, onFinish }) {
           voiceObj: voice,
         };
       });
-      const murfVoices = murfVoiceOptions.map((voice) => ({
-        ...voice,
-        key: `murf-${voice.id}`,
-      }));
-      const mergedVoices = [...murfVoices, ...browserVoices];
-      setAvailableVoices(mergedVoices);
-
-      setSelectedVoiceId((prev) => prev || mergedVoices[0]?.key || "");
+      setAvailableVoices(browserVoices);
+      setSelectedVoiceId((prev) => prev || browserVoices[0]?.key || "");
     };
 
     loadVoices();
@@ -93,37 +79,6 @@ function Step2Interview({ interviewData, onFinish }) {
 
 
   /* ---------------- SPEAK FUNCTION ---------------- */
-  const playMurfAudio = async (text, voiceConfig) => {
-    const token = localStorage.getItem("token");
-    const result = await axios.post(
-      ServerUrl + "/api/tts/speak",
-      {
-        text,
-        voiceId: voiceConfig.id,
-        style: voiceConfig.style || "Conversational",
-      },
-      {
-        withCredentials: true,
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        timeout: 35000,
-      }
-    );
-
-    const audioUrl = result?.data?.audioUrl;
-    const audioBase64 = result?.data?.audioBase64;
-    const src = audioUrl || (audioBase64 ? `data:audio/mpeg;base64,${audioBase64}` : null);
-    if (!src) throw new Error("No playable audio from Murf");
-
-    return new Promise((resolve, reject) => {
-      const audio = new Audio(src);
-      murfAudioRef.current = audio;
-      audio.onended = () => resolve();
-      audio.onpause = () => resolve();
-      audio.onerror = () => reject(new Error("Audio playback failed"));
-      audio.play().catch(reject);
-    });
-  };
-
   const speakWithBrowser = (text, browserVoice) =>
     new Promise((resolve) => {
       if (!window.speechSynthesis || !browserVoice?.voiceObj) {
@@ -144,10 +99,6 @@ function Step2Interview({ interviewData, onFinish }) {
 
   const stopCurrentSpeech = () => {
     window.speechSynthesis.cancel();
-    if (murfAudioRef.current) {
-      murfAudioRef.current.pause();
-      murfAudioRef.current = null;
-    }
     setIsAIPlaying(false);
     setSubtitle("");
     if (videoRef.current) {
@@ -172,11 +123,7 @@ function Step2Interview({ interviewData, onFinish }) {
     videoRef.current?.play();
 
     try {
-      if (selectedVoice.provider === "murf") {
-        await playMurfAudio(text, selectedVoice);
-      } else {
-        await speakWithBrowser(text, selectedVoice);
-      }
+      await speakWithBrowser(text, selectedVoice);
       return true;
     } catch (error) {
       const fallbackVoice = availableVoices.find((voice) => voice.provider === "browser");
@@ -424,7 +371,7 @@ function Step2Interview({ interviewData, onFinish }) {
                 Voice Design
               </label>
               <span className='text-[10px] px-2 py-1 rounded-full bg-[#0B3C6D] text-white uppercase tracking-wider'>
-                {selectedVoice?.provider === "murf" ? "Murf Realistic" : "Browser"}
+                Browser Voice
               </span>
             </div>
             <select
@@ -439,7 +386,7 @@ function Step2Interview({ interviewData, onFinish }) {
               ))}
             </select>
             <p className='mt-2 text-xs text-[#52749c]'>
-              Select a voice before interview starts. Murf gives emotional realistic output.
+              Select a voice before interview starts.
             </p>
           </div>
 
