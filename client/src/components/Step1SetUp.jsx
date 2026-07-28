@@ -15,6 +15,8 @@ import { setUserData } from '../redux/userSlice';
 function Step1SetUp({ onStart }) {
     const {userData}= useSelector((state)=>state.user)
     const dispatch = useDispatch()
+    const MotionDiv = motion.div;
+    const MotionButton = motion.button;
     const [role, setRole] = useState("");
     const [experience, setExperience] = useState("");
     const [mode, setMode] = useState("Technical");
@@ -61,7 +63,7 @@ function Step1SetUp({ onStart }) {
         setError("")
         setLoading(true)
         try {
-           const result = await axios.post(ServerUrl + "/api/interview/generate-questions" , {role, experience, mode , resumeText, projects, skills } , {withCredentials:true}) 
+           const result = await axios.post(ServerUrl + "/api/interview/generate-questions" , {role, experience, mode , resumeText, projects, skills } , {withCredentials:true, timeout: 45000}) 
            console.log(result.data)
            if(userData){
             dispatch(setUserData({...userData , credits:result.data.creditsLeft}))
@@ -76,7 +78,7 @@ function Step1SetUp({ onStart }) {
         }
     }
     return (
-        <motion.div
+        <MotionDiv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
@@ -84,7 +86,7 @@ function Step1SetUp({ onStart }) {
 
             <div className='w-full max-w-6xl bg-white rounded-3xl shadow-2xl grid md:grid-cols-2 overflow-hidden'>
 
-                <motion.div
+                <MotionDiv
                     initial={{ x: -80, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 0.7 }}
@@ -116,7 +118,7 @@ function Step1SetUp({ onStart }) {
                                     text: "Performance Analytics",
                                 },
                             ].map((item, index) => (
-                                <motion.div key={index}
+                                <MotionDiv key={index}
                                     initial={{ y: 30, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 0.3 + index * 0.15 }}
@@ -125,18 +127,18 @@ function Step1SetUp({ onStart }) {
                                     {item.icon}
                                     <span className='text-gray-700 font-medium'>{item.text}</span>
 
-                                </motion.div>
+                                </MotionDiv>
                             ))
                         }
                     </div>
 
 
 
-                </motion.div>
+                </MotionDiv>
 
 
 
-                <motion.div
+                <MotionDiv
                     initial={{ x: 80, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 0.7 }}
@@ -179,7 +181,7 @@ function Step1SetUp({ onStart }) {
                         </select>
 
                         {!analysisDone && (
-                            <motion.div
+                            <MotionDiv
                                 whileHover={{ scale: 1.02 }}
                                 onClick={() => document.getElementById("resumeUpload").click()}
                                 className='border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-[#1E88E5] hover:bg-[#eaf2fb] transition'>
@@ -197,7 +199,7 @@ function Step1SetUp({ onStart }) {
                                 </p>
 
                                 {resumeFile && (
-                                    <motion.button
+                                    <MotionButton
                                         whileHover={{ scale: 1.02 }}
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -209,15 +211,15 @@ function Step1SetUp({ onStart }) {
 
 
 
-                                    </motion.button>)}
+                                    </MotionButton>)}
 
-                            </motion.div>
+                            </MotionDiv>
 
 
                         )}
 
                         {analysisDone && (
-                            <motion.div
+                            <MotionDiv
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className='bg-gray-50 border border-gray-200 rounded-xl p-5 space-y-4'>
@@ -250,12 +252,12 @@ function Step1SetUp({ onStart }) {
                                     </div>
                                 )}
 
-                            </motion.div>
+                            </MotionDiv>
                         )}
 
 
-                        <motion.button
-                        onClick={handleStart}
+                        <MotionButton
+                            onClick={handleStart}
                             disabled={!role || !experience || loading || analyzing}
                             whileHover={{ scale: 1.03 }}
                             whileTap={{ scale: 0.95 }}
@@ -263,16 +265,16 @@ function Step1SetUp({ onStart }) {
                             {loading ? "Starting...":"Start Interview"}
 
 
-                        </motion.button>
+                        </MotionButton>
                         {error && (
                             <p className='text-sm text-red-600 text-center'>{error}</p>
                         )}
                     </div>
 
-                </motion.div>
+                </MotionDiv>
             </div>
 
-        </motion.div>
+        </MotionDiv>
     )
 }
 

@@ -1,5 +1,10 @@
 import User from "../models/user.model.js"
 
+const resolveRoleByEmail = (email) => {
+    const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase()
+    const userEmail = email?.trim().toLowerCase()
+    return adminEmail && userEmail === adminEmail ? "admin" : "user"
+}
 
 export const getCurrentUser = async (req,res) => {
     try {
@@ -7,6 +12,11 @@ export const getCurrentUser = async (req,res) => {
         const user = await User.findById(userId)
         if(!user) {
             return res.status(404).json({message:"user does not found"})
+        }
+        const expectedRole = resolveRoleByEmail(user.email)
+        if (user.role !== expectedRole) {
+            user.role = expectedRole
+            await user.save()
         }
         return res.status(200).json(user)
     } catch (error) {

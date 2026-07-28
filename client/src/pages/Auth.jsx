@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { motion } from "motion/react";
 import axios from "axios";
 import { signInWithPopup } from "firebase/auth";
 import { useDispatch } from "react-redux";
@@ -36,6 +35,8 @@ function Auth({ defaultMode = "login" }) {
     requestedPath && requestedPath !== "/" && requestedPath !== "/login" && requestedPath !== "/register"
       ? requestedPath
       : "/interview";
+  const getRedirectPath = (userData) =>
+    userData?.role === "admin" && redirectTo === "/interview" ? "/admin" : redirectTo;
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -78,7 +79,7 @@ function Auth({ defaultMode = "login" }) {
       }
       localStorage.setItem("userData", JSON.stringify(result.data));
       dispatch(setUserData(result.data));
-      navigate(redirectTo, { replace: true });
+      navigate(getRedirectPath(result.data), { replace: true });
     } catch (apiError) {
       setError(apiError?.response?.data?.message || "Authentication failed.");
     } finally {
@@ -107,7 +108,7 @@ function Auth({ defaultMode = "login" }) {
       }
       localStorage.setItem("userData", JSON.stringify(result.data));
       dispatch(setUserData(result.data));
-      navigate(redirectTo, { replace: true });
+      navigate(getRedirectPath(result.data), { replace: true });
     } catch (err) {
       console.log(err);
       setError("Google sign-in failed.");

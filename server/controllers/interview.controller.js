@@ -5,6 +5,92 @@ import { generatePlanReport, sanitizeTieredReport } from "../services/planReport
 import User from "../models/user.model.js";
 import Interview from "../models/interview.model.js";
 
+const parseAiJsonResponse = (rawText) => {
+  if (!rawText || typeof rawText !== "string") {
+    throw new Error("AI returned empty JSON response.");
+  }
+
+  const trimmed = rawText.trim();
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    const extractBalancedJson = (text) => {
+      const startIndex = Math.min(
+        ...["{", "["].map((marker) => {
+          const index = text.indexOf(marker);
+          return index === -1 ? Number.POSITIVE_INFINITY : index;
+        })
+      );
+
+      if (!Number.isFinite(startIndex)) return null;
+
+      const opening = text[startIndex];
+      const closing = opening === "{" ? "}" : "]";
+      let depth = 0;
+      let inString = false;
+      let escaped = false;
+
+      for (let index = startIndex; index < text.length; index += 1) {
+        const character = text[index];
+
+        if (inString) {
+          if (escaped) {
+            escaped = false;
+            continue;
+          }
+          if (character === "\\") {
+            escaped = true;
+            continue;
+          }
+          if (character === '"') {
+            inString = false;
+          }
+          continue;
+        }
+
+        if (character === '"') {
+          inString = true;
+          continue;
+        }
+
+        if (character === opening) {
+          depth += 1;
+        } else if (character === closing) {
+          depth -= 1;
+          if (depth === 0) {
+            return text.slice(startIndex, index + 1);
+          }
+        }
+      }
+
+      return null;
+    };
+
+    const candidates = [
+      trimmed,
+      trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim(),
+      trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i)?.[1]?.trim(),
+      extractBalancedJson(trimmed),
+    ].filter(Boolean);
+
+    for (const candidate of candidates) {
+      try {
+        return JSON.parse(candidate);
+      } catch {
+        continue;
+      }
+    }
+
+    throw new Error(`AI returned invalid JSON: ${trimmed.slice(0, 120)}`);
+  }
+};
+
+const trimText = (text, maxChars) => {
+  const safeText = String(text || "").replace(/\s+/g, " ").trim();
+  if (safeText.length <= maxChars) return safeText;
+  return safeText.slice(0, maxChars).trim();
+};
+
 export const analyzeResume = async (req, res) => {
   try {
     if (!req.file) {
@@ -33,6 +119,8 @@ export const analyzeResume = async (req, res) => {
       .replace(/\s+/g, " ")
       .trim();
 
+    const resumeContext = trimText(resumeText, 6000);
+
     const messages = [
       {
         role: "system",
@@ -51,14 +139,14 @@ Return strictly JSON:
       },
       {
         role: "user",
-        content: resumeText
+        content: resumeContext
       }
     ];
 
 
     const aiResponse = await askAi(messages)
 
-    const parsed = JSON.parse(aiResponse);
+    const parsed = parseAiJsonResponse(aiResponse);
 
     fs.unlinkSync(filepath)
 
@@ -110,14 +198,14 @@ export const generateQuestion = async (req, res) => {
     }
 
     const projectText = Array.isArray(projects) && projects.length
-      ? projects.join(", ")
+      ? projects.slice(0, 5).join(", ")
       : "None";
 
     const skillsText = Array.isArray(skills) && skills.length
-      ? skills.join(", ")
+      ? skills.slice(0, 8).join(", ")
       : "None";
 
-    const safeResume = resumeText?.trim() || "None";
+    const safeResume = trimText(resumeText, 3500) || "None";
 
     const userPrompt = `
     Role:${role}
@@ -300,6 +388,8 @@ Return ONLY valid JSON in this format:
   "finalScore": number,
   "feedback": "short human feedback"
 }
+Do not wrap the output in markdown fences.
+Do not add any extra text.
 `
       }
       ,
@@ -316,7 +406,7 @@ Answer: ${answer}
     const aiResponse = await askAi(messages)
 
 
-    const parsed = JSON.parse(aiResponse);
+    const parsed = parseAiJsonResponse(aiResponse);
 
     question.answer = answer;
     question.confidence = parsed.confidence;

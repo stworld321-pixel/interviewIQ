@@ -1,45 +1,65 @@
 import axios from "axios"
 
+const normalizeAiText = (content) => {
+  if (typeof content !== "string") return "";
+
+  const trimmed = content.trim();
+  const fencedMatch = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  if (fencedMatch?.[1]) {
+    return fencedMatch[1].trim();
+  }
+
+  return trimmed;
+};
+
 export const askAi = async (messages) => {
   try {
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       throw new Error("Messages array is empty.");
     }
 
-    const ollamaBaseUrl = process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434";
-    const ollamaModel = process.env.OLLAMA_MODEL || "llama3.1:8b";
-    const ollamaTimeout = Number(process.env.OLLAMA_TIMEOUT_MS || 120000);
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    const model = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
+    const baseUrl = (process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1").replace(/\/+$/, "");
+    const timeout = Number(process.env.OPENROUTER_TIMEOUT_MS || 120000);
+    const siteUrl = process.env.OPENROUTER_SITE_URL || process.env.CLIENT_URL?.split(",")[0]?.trim() || "";
+    const siteName = process.env.OPENROUTER_SITE_NAME || "interviewIQ";
+
+    if (!apiKey) {
+      throw new Error("OPENROUTER_API_KEY is not configured.");
+    }
 
     const response = await axios.post(
-      `${ollamaBaseUrl.replace(/\/+$/, "")}/api/chat`,
+      `${baseUrl}/chat/completions`,
       {
-        model: ollamaModel,
+        model,
         messages,
+        temperature: 0.4,
         stream: false,
-        options: {
-          temperature: 0.7,
-        },
       },
       {
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+          ...(siteUrl ? { "HTTP-Referer": siteUrl } : {}),
+          ...(siteName ? { "X-OpenRouter-Title": siteName } : {}),
         },
-        timeout: ollamaTimeout,
+        timeout,
       }
     );
 
-    const content = response?.data?.message?.content;
+    const content = response?.data?.choices?.[0]?.message?.content;
     if (!content || !content.trim()) {
       throw new Error("AI returned empty response.");
     }
 
-    return content;
+    return normalizeAiText(content);
   } catch (error) {
     const apiMessage =
       error?.response?.data?.error ||
       error?.response?.data?.message ||
       error.message;
-    console.error("Ollama Error:", apiMessage);
-    throw new Error(`Ollama API Error: ${apiMessage}`);
+    console.error("OpenRouter Error:", apiMessage);
+    throw new Error(`OpenRouter API Error: ${apiMessage}`);
   }
 }

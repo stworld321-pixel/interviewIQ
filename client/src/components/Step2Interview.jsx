@@ -41,6 +41,8 @@ function Step2Interview({ interviewData, onFinish }) {
 
   const currentQuestion = questions[currentIndex];
   const selectedVoice = availableVoices.find((voice) => voice.key === selectedVoiceId) || null;
+  const MotionButton = motion.button;
+  const MotionDiv = motion.div;
 
 
   useEffect(() => {
@@ -168,8 +170,6 @@ function Step2Interview({ interviewData, onFinish }) {
         const questionKey = `question-${currentIndex}-${selectedVoiceId}`;
         if (lastSpokenKeyRef.current === questionKey) return;
 
-        await new Promise(r => setTimeout(r, 800));
-
         // If last question (hard level)
         if (currentIndex === questions.length - 1) {
           await speakText("Alright, this one might be a bit more challenging.");
@@ -191,27 +191,16 @@ function Step2Interview({ interviewData, onFinish }) {
   useEffect(() => {
     if (isIntroPhase) return;
     if (!currentQuestion) return;
-    
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          return 0;
-        }
-        return prev - 1
 
-      })
+    setTimeLeft(currentQuestion.timeLimit || 60);
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
 
     return () => clearInterval(timer)
 
-  }, [isIntroPhase, currentIndex])
-
-  useEffect(() => {
-  if (!isIntroPhase && currentQuestion) {
-    setTimeLeft(currentQuestion.timeLimit || 60);
-  }
-}, [currentIndex]);
+  }, [isIntroPhase, currentIndex, currentQuestion?.timeLimit])
 
 
   useEffect(() => {
@@ -247,7 +236,9 @@ function Step2Interview({ interviewData, onFinish }) {
     if (recognitionRef.current && !isAIPlaying && !micActiveRef.current) {
       try {
         recognitionRef.current.start();
-      } catch { }
+      } catch (error) {
+        void error;
+      }
     }
   };
 
@@ -302,18 +293,15 @@ function Step2Interview({ interviewData, onFinish }) {
     setAnswer("");
     setFeedback("");
     setSubmitError("");
+    stopMic();
+    stopCurrentSpeech();
 
     if (currentIndex + 1 >= questions.length) {
       finishInterview();
       return;
     }
 
-    await speakText("Alright, let's move to the next question.");
-
-    setCurrentIndex(currentIndex + 1);
-    setTimeout(() => {
-      if (isMicOn) startMic();
-    }, 500);
+    setCurrentIndex((prev) => prev + 1);
 
    
   }
@@ -470,24 +458,24 @@ function Step2Interview({ interviewData, onFinish }) {
 
 
          {!feedback ? ( <div className='flex items-center gap-4 mt-6'>
-            <motion.button
+            <MotionButton
               onClick={toggleMic}
               whileTap={{ scale: 0.9 }}
               className='w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-black text-white shadow-lg'>
               {isMicOn ? <FaMicrophone size={20} /> : <FaMicrophoneSlash size={20}/>}
-            </motion.button>
+            </MotionButton>
 
-            <motion.button
+            <MotionButton
             onClick={submitAnswer}
             disabled={isSubmitting}
               whileTap={{ scale: 0.95 }}
               className='flex-1 bg-gradient-to-r from-[#0B3C6D] to-[#1E88E5] text-white py-3 sm:py-4 rounded-2xl shadow-lg hover:opacity-90 transition font-semibold disabled:bg-gray-500'>
               {isSubmitting?"Submitting...":"Submit Answer"}
 
-            </motion.button>
+            </MotionButton>
 
           </div>):(
-            <motion.div 
+            <MotionDiv 
              initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             className='mt-6 bg-[#eef5ff] border border-[#cfe0f7] p-5 rounded-2xl shadow-sm'>
@@ -500,7 +488,7 @@ function Step2Interview({ interviewData, onFinish }) {
                 Next Question <BsArrowRight size={18}/>
               </button>
 
-            </motion.div>
+            </MotionDiv>
           )}
           {submitError && !feedback && (
             <p className='mt-3 text-sm text-red-600 font-medium'>{submitError}</p>

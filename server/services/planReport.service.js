@@ -19,15 +19,73 @@ const parseAiJson = (raw) => {
   try {
     return JSON.parse(raw);
   } catch {
-    const start = raw.indexOf("{");
-    const end = raw.lastIndexOf("}");
-    if (start >= 0 && end > start) {
+    const extractBalancedJson = (text) => {
+      const startIndex = Math.min(
+        ...["{", "["].map((marker) => {
+          const index = text.indexOf(marker);
+          return index === -1 ? Number.POSITIVE_INFINITY : index;
+        })
+      );
+
+      if (!Number.isFinite(startIndex)) return null;
+
+      const opening = text[startIndex];
+      const closing = opening === "{" ? "}" : "]";
+      let depth = 0;
+      let inString = false;
+      let escaped = false;
+
+      for (let index = startIndex; index < text.length; index += 1) {
+        const character = text[index];
+
+        if (inString) {
+          if (escaped) {
+            escaped = false;
+            continue;
+          }
+          if (character === "\\") {
+            escaped = true;
+            continue;
+          }
+          if (character === '"') {
+            inString = false;
+          }
+          continue;
+        }
+
+        if (character === '"') {
+          inString = true;
+          continue;
+        }
+
+        if (character === opening) {
+          depth += 1;
+        } else if (character === closing) {
+          depth -= 1;
+          if (depth === 0) {
+            return text.slice(startIndex, index + 1);
+          }
+        }
+      }
+
+      return null;
+    };
+
+    const candidates = [
+      raw,
+      raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim(),
+      raw.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i)?.[1]?.trim(),
+      extractBalancedJson(raw),
+    ].filter(Boolean);
+
+    for (const candidate of candidates) {
       try {
-        return JSON.parse(raw.slice(start, end + 1));
+        return JSON.parse(candidate);
       } catch {
-        return null;
+        continue;
       }
     }
+
     return null;
   }
 };
